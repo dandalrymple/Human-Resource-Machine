@@ -1,0 +1,4212 @@
+
+
+gotta keep your 2 comparison values
+if you just do math on them, you'll lose the 2nd value, which might be what you need
+
+so 
+
+inbox
+copy to 1
+
+inbox
+jump z to near end
+copy to 0
+
+sub 1
+
+if not neg, jump back to 2nd inbox
+if neg, copy from 0, copy to 1
+jump back to 2nd inbox
+
+after our jump z
+copy from 1
+outbox
+jump back to above 1st inbox
+
+worked.
+
+now for the mod situation
+
+the idea is serial subtraction
+
+probably want to store 3 values? 
+
+I don't know, let's play it out
+
+inbox
+copyto 0
+inbox 
+copyto 1
+
+so you go plunk, plunk, copy from 0, sub 1, jumpN to copyfrom and outbox, copy to 2, jump back to sub 1
+
+grab the next 2 after the outbox (jump back to beginning)
+
+now for counting division
+
+what we'll do this time is keep a running tab in a loop
+
+so a bump+
+probably copy from 9 to 3
+
+
+boom that worked a TREAT
+
+okay time for cumulative countdown
+
+inbox
+copy to 0
+copy to 1
+copy to 2
+
+let's say I start with 9
+
+I need to go 9+8+7+6+5+4+3+2+1
+
+so I need to bump down 1
+jump Z or N downward
+copy from 2
+add 1
+
+turns out we only needed 2 values stored - current value and the bumped down value. We got it to work in 12 steps.
+
+For 3-sort, I might say duck their initial code and clear it out. Or I might not, I don't know.
+
+seems like their first 6 lines are legit. Hmm.OR NOT!
+
+so working backwards:
+
+C B A
+
+A VS. B - IF NEG, B is larger. 
+A VS. C. - If Neg, C is larger.
+B Vs. C - if Neg, C is larger.
+
+so I'm thinking for a loop we just start all over again
+
+we need 3 more boxes for the results:
+
+winner 1
+winner 2
+big loser
+
+sort them by possible results:
+
+abc, acb, bac, bca, cab, cba
+
+so that's six results.
+
+we need 3 fights - a vs. b, b vs. c, a vs. c, then we can sort it out.
+
+if a wins, and then b wins, it's already abc.
+if a wins and b loses, then it's either cab or acb so we need a c battle.
+if a loses and then b loses, it's already cab. 
+if a loses and then b wins... it's either bac or bca.
+
+so the outcomes will be something like (just for ABC outcome)
+
+copyfrom 0
+outbox
+copyfrom 1
+outbox 
+copy from 2
+outbox
+
+SIX TIMES for the possible arrangements, if I do it my way. So the outcomes alone will take 36 lines. 
+
+Yikes! I'm thinking this is probably going to be an efficiency problem... there's gotta be a loop that does this in a better way.
+
+
+
+
+
+
+
+a: INBOX COPYTO 0 INBOX COPYTO 1 COPYFROM 0 b: SUB 1 JUMPN c JUMP b c: ADD 1 OUTBOX JUMP a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+anyway...
+
+I need all my ifs first...
+
+if a beats b in the first match, then you have to do what?... 
+
+okay just have b vs. c duke it out next... you don't need to store winners if you're going on conditionals...
+
+so then if b wins, you just plunk in A, B, C to the outbox
+
+that's 1/6 done
+
+A loses to B... B Beats C... then A and C have to go ...
+
+if A wins, then it's BAC so plunk in C A B 
+if C wins, plunk in B, C, A
+
+A loses to B... then B loses to C...
+
+then you plunk in C, B, A
+
+that's like 4/6 done
+
+if A beats B, then B loses to C, then you have A vs. C
+
+if C wins you plunk in C A B
+if A wins you plunk in A C B 
+
+So you're always starting off with A vs. B, and then moving to a different B vs. C set up, and sometimes moving to A vs. C set ups.
+
+There will be repeated lines but the steps themselves won't repeat due to jumps. Okay, good. got it.
+
+so the first one looks like this:
+
+B - A no neg, just jump to C - B, if neg then it's ABC or you could have A - C instead... if neg, jump out. yeah. that works.
+
+OH FROM LEAST TO GREATESt durp
+
+okay then if ABC, plunk in CBA
+
+
+okay so you have A vs B, if A wins continue, if B wins jump
+   jump to B vs C, if B wins jump? to A vs. C and if A wins, do a athing, if C wins jump to a different thing. Not too hard.
+B vs. C, if B wins continue, if B loses jump
+
+
+Alright, so the game threw me a curveball and decided to give me some negative numbers.... yikes!
+
+I'm thinking I'm going to have to add a condition for if the number I copy from is Negative... to do an addition instead of subtraction to do the comparisons. That might be a little longer but it'll still get the job done.
+
+So comparing A vs. C if A is -3 and C is -1... hmm, might have to do checks for both numbers picked up!
+
+the second number is irrelevant. It's only the first number that matters.
+
+-3 +1 is still a neg number so A is... not... crap. crap crap crap.
+
+just means B is the greater number in that case, then.
+
+
+
+
+Alright here's my 3 sort idea
+
+
+
+take a b and c and plunk them down
+
+A - B  - different set of steps if A is negative, so jumpN after a CopyFrom if A is neg
+
+If the Answer is Neg, sort B A, if Pos, sort A B
+
+JumpN from Neg A -  go A - B, if Neg, sort A B, if Pos, sort B A
+
+Then go Box 1 - C -again, different test for if Box 1 is Neg...
+
+If Box 1 - C = Neg, do Box 2 - C to sort out the 3. 
+
+Something like that, anyway.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ha! got the time saver idea down. I knew there had to be a trick like this.
+
+
+Okay so you grab your inbox first number and then there's a Jump N, but the procedures are just flipped...
+
+So you grab and place A. 
+You grab B and subtract A from it. If neg, do stuff.
+Add A back. Sort A and B by who won and lost.
+Grab C. Do a Jump N situation.
+Do C - Loser Box first and add LoserBox back when done. Sort C already if it loses, then sort B and A according to whichever was bigger. If C wins, take it to the WinnerBox. and so on.
+
+You've got the whole mechanism now.
+
+You just have to flip things for if A or C are negative. Or maybe if B is negative... B-A... hmm. Yeah. Then C minus whatever. So I guess if B is negative, that's the real conundurum.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I'm just trying to figure out the comparisons on negative numbers.
+
+say you want to save time and do a B - A situation.
+
+If B is -3 and A is -1... how do you determine which is greater via addition or subtraction?
+
+In a B - A... you have -3 + 1, which is still a negative number. If B - A is positive, is A the lesser number? Yes. That will be the case. So you just have to flip the signage there and install a negative condition for the opposite sort.
+
+Alright so we got the first bit sorted ... is there any way we can do a flipflop for if a number is negative? Like just send it back to another comparison?
+
+Hmm, I have no idea.
+
+So I have A > B > C.
+
+Probably should have A > C > B next to tidy things up.
+
+Listen, we only need 0 and 1 boxes.
+
+Inbox, grab A, plunk it in 0.
+Inbox, grab B, if it's negative, do some other crap.
+Sub A. If neg, do some other crap.
+Add A, plunk B into 1. 
+
+Grab C. Sub loser box. If neg, add it to get it back and plunk into outbox. Grab loser, grab winner.
+
+Will winner and loser boxes be reversed if the main subtractor is negative?
+
+Yeah I think so. I think you can just jump to Winner conditions differently.
+
+positve and negative don't matter with the subtraction situation. I keep messing that up.
+
+yeah, it matters.. crikey.
+
+I passed the specific crap but failed the general inputs. 
+
+Alright. Yikes.
+
+So here's what happened.
+
+So I was like "hey let's take 2 and subtract minus 2." You get 0? No, you get 4. 
+
+I also don't have any JumpZs, which i sorely need.
+
+moved on to other problems for now. They seem to be easier.
+
+copy to 17
+copyfrom 17 
+sub (16)
+if z, bump up 15, jump back in somehow
+bump up 16,
+
+actually I have a different idea: keep a copy of what's in the next thing on the list in another hold, like 18. so you can copy the 14 - and if THAT is zero, you break out of the loop. It's more steps but it's alright.
+
+so copy from 14
+copy to 15 letterCheck?
+copy to 16
+copy to 17 sub(x)Copy to get bumped +
+inbox
+copy to 18 letterHold
+copy from 18
+
+Dude I'm so confused.
+
+We need a number of Letters - where thing - thing = 0, bump it up
+we need a number to let me know where to subtract next
+we need a constant 0 - 14
+we need *sigh* we need to copy the number to subtract from next, and then IF THAT IS ZERO (space 14), we start all over because we're done.
+
+so 4 basic variables.
+
+constant 0 
+numberLettersReceived (bumped if math is zero)
+nextPlaceToCheck (bumped)
+copy of nextPlaceToCheck to check for zero? Or can we copy from the NP2C and throw out the copy if it's not zero?
+yeah I think that's even better.
+
+So 3 variables, just with a copyfrom checker.
+
+Alright so that worked out pretty well. Over size and speed but oh well.
+
+Vowel Incinerator!
+
+Hmm... yeah seems like the last one. Inbox, copy to floor, pick up from floor, bang it out, if zero, go back to inbox, if not, try them all out, if you reach the 0 string, outbox what you've got and start over.
+
+So you need the zero. You need the copy of the zero to get bumped for iteration runs so you can do sub(). Do a copy from sub() check and if it's zero, throw your crap in the outbox. You need a copy of the letter itself. So that isn't so bad. Pretty much have this one in the bag.
+
+GOT IT. also not optimized but oh well.
+
+These are pretty simple so far.
+
+
+
+
+
+
+
+
+we need a count of stuff we've tried already. That's what was missing. or is it?
+
+lettersOuboxed?
+lettersStored?
+timesChecked?
+
+my problem keeps coming back to the first of a 2nd kind of letter.
+
+How.... do... you check without checking itself?
+
+Okay... 
+
+new spot is (13)
+okay so you check every spot up until (13)
+so you do your 12 sub 13 crap and if THAT's zero you go right to the outbox and skip the subtraction.
+Or I'd like to do that but somehow I have to keep the number like minus one? Okay here's what you do - have a JumpN and contain your subtraction loop to the N. Can you?
+
+0 - 1 jump N to bump 12 and copy from (13) and sub (12) if that hits zero, jump out, if not, loop back up to your check until that hits Zero, Zero jumps to copy from, outbox, bump13, and jump back to the second inbox.
+
+DID IT. 
+
+Even shaved off a few commands.
+
+
+
+
+Alright some of the newer ones don't make a loooot of sense..
+
+
+
+1 is the hundreds counter
+0 is the tens counter
+2 is the ones variable
+
+inbox 
+sub 100
+if neg, move on the ten section
+store value in new hole
+kick up the counter
+jump back up?  not quite
+sub 100
+if neg, do another thing - because we're not skipping on to tens just yet - take counter number to outbox, then skip to ten
+yeah, something similar to that
+tens:
+sub 10 and if neg kick to outbox and jump
+
+for tens and ones separation:
+
+sub ten, kick up tens counter, store new value in ones variable
+
+if you get a neg, take tens counter to outbox, and then take ones counter to outbox,and then start over
+
+that's pretty much it
+
+you gotta store the value...
+
+copy to 2
+kick up the counter
+
+
+Okay here we go 
+
+
+copy from the 9
+copy to 0 
+copy to 1
+inbox
+copy to 2 - this will be our running number counter
+
+if a negative number is reached, re-add the number we just subtracted back to get the running number counter.
+
+so basically like sub 100
+if neg, 
+re add 100, store that number in 2, then move on to tens
+
+(if neg) sub 10, again, if neg, re-add 10 but then just throw it to the outbox and jump back to the beginning
+
+is sub 100 is pos - kick the hundos counter up one and store the new number in 2 - and keep copying from 2 and so on - when we get a neg, re-add the hundo, chuck the hundreds counter into the outbox
+
+we might not even need a "tens counter" - maybe just a counter, period. After we are done with 100, we can just re-use the counter by copying from 9 again.
+
+Or not. That might be more steps.
+
+tens, if positive, is very similar to the hundreds - subtract ten, store the new number in 2, kick the counter for tens up by one. when we hit the neg, re-add the tens, store the new number, then chuck tens counter into the outbox, chuck the current value into the outbox, and start over.
+
+my solution works great --- as long as the other digits aren't zero. Then it skips. Like it'll skip the tens digit entirely.
+
+we need a zero check only on the tens...
+
+so sub 9 
+if zero jump to outbox and then go through with ones instructions  - put extra jumps at top and back in
+
+
+hundreds won't be a zero
+
+how do we deal with single digits?
+
+how do we differentiate between no tens and a tens as zero?
+
+you only check the tens for zeroes if the hundreds were positive
+
+alright here's the code in its entirety - duck small lines challenge
+
+
+
+
+
+copy from 9
+copy to 1 - hundreds counter
+copy to 0 - tens counter
+inbox
+write to 2
+check vs. 100
+if pos, and pos only, we do a check for ZERO TENS
+
+check for zero tens - we try the no. 2 vs. sub 10 - if it's neg, then we have ZERO TENS - so we take from 9 to the outbox, then move on to take from 2 to the outbox, because that's our ones.
+
+if tens failed the zero check, then they get to go through the iterative process...
+
+how do we check for single digits now?
+
+single digits - will be a neg, neg situation - so if hundos are neg AND tens are NEG, just chuck the number right to the outbox (copy from 2, outbox)
+
+ALRIGHT WE GOT IT. It was verbose but the crap WORKS.
+
+Okay. So now we're at prime factory.
+
+Odds are we'll never have more than 3 prime factors on this one.
+
+okay, we have the case of 6, 14, and 19...
+
+plunk down each? 
+
+So we can take... err... 6 - 14... is 8. 8 minus 6... is 2? hory chits, mang.
+
+Oh I see. 
+
+This is iteration.
+
+It's going to suck.
+
+We'll need a couple things. 
+
+keep the zero to start fresh for new inputs
+Bumped counter for primes
+Iterative subtraction counter
+some JumpNs
+
+and probably 3 spaces for factor possibilities
+
+19 is like what... just 19. 
+How many primes do we test? Done when we get a negative subtraction result, I guess...
+
+Okay I see
+
+In the case of 8, we have to work on the divison counter as well
+
+so we'd have like 8 - 2, bumped 4 times - so we'd have 2 to have to go into 4... so we get a 2 times... so we need a second division counter? or we copy from the division counter to a second prime candidate address? 
+
+
+
+Okay so let's solve for 13 and 8, shall we?
+
+for 13....
+
+
+copy from 25
+copy to 0
+bump + 0
+bump + 0
+inbox copy to 1
+you have to use JUMPZero for evenness, and JUMPN for oddness
+serial subtract prime no. - if odd test procs, copy from 1, outbox, jump back to the beginning, I think we've solved 13. 
+
+IT'S NOT JUST EVEN-NESS - it'S PRIMENESS
+
+you can just bump the counter plus one - a 4 will do the same as a 2.
+
+but we don't need a 4...
+
+if we had 2 as prime, we have a bumped subtraction counter.... and we keep using current prime on the subtraction counter... if we hit PRIME start over, if it hits even, chunk current prime into outbox - this is how we'll hit 8. 
+
+we'll hit "prime" as we try to subtract from 0, meaning we start over anyway.
+
+and by START OVER I mean bump the current prime and try that out...
+
+we need a way to break the loop.
+
+alright, doesn't seem too bad... once we've outboxed and jump...
+
+
+alright had some time to sleep on it.
+
+
+for prime factor, we need to make sure we are checking the current prime vs. the saved number. If we go over (it's negative), we stop the process and move on to the next number.
+
+So the variables are like this:
+
+1primeCandidate - starts at 0 and then gets bumped to 2
+2currentValue - needs to be stored so we know when to break out of the math loop, otherwise it would check and fail everything to 999+.
+3currentValueNum2 - stored to be replaced by the subtractionCounter OR current value if crap ducks up?
+4SubtractionCounter - obviously starts at 0, counts how many times we subtracted the current Prime Candidate
+
+so that's 4 variables
+
+but we can do it now
+
+solves for 13:
+
+copy 0 value to primeCan
+bump it up 2 - we'll loop back around to just one bump afterwards
+ and copy 0 value to SubtractionCounter
+grab from inbox
+write to CurrentVal, and CV2
+sub primeCan; if negative, do some other crap, - namely, throw crap out and go back to subbing (sub Counter should still be safe)overwrite to CV 2, bump sub counter
+loop back to the subbing and then IF ZERO... take primeCan and put it in the outbox; check if primeCan vs. CV1 are the same - if zero, break out of the loop, if not, loop back to the bumping up primeCan...
+but before we loop - take subCounter and overwrite to CurrentValue.
+
+this method also solves for 8. In theory, should solve for anything we throw at it.
+
+so 0 is primeCan
+1 is currentVal
+2 is trueCV
+3 is subCounter
+
+so we copy from CV1, sub primeCan - if Zero, do a thing - overwrite CV1 and copy from primeCan to put into Outbox. If pos, we bump up the SubCount, go back to sub and overwrite and bump - if neg, we go to the next number completely
+
+okay so I may have goofed a little...
+
+how do you get 2 and 2 and 2 from 8?
+
+take 8
+subtract a bunch of times you get 4 as the sub counter and hit 0, so you chunk in the prime
+try that same prime again - only if you hit negative, does the prime num get bumped. 
+
+so then you try to take away 3s... and you hit negative... so you move on to the next number. You never hit a point where you do 4. 
+
+my problem is like, with a number such as 12...
+
+hrrm....
+
+so you do 2... and it works. CV drops to 6
+you do 2 again... and CV drops to 3. So you update the realCV after the series.
+
+then you'd do 3...  and you'd be left with 0. Try 4 and you hit what, negative.
+
+so let's say 15 happens.
+
+you try 2, doesn't work. bump it up and try 3.
+3 works, new CV becomes 5. 
+4 doesn't work.
+5 works, new CV becomes 0.
+6 hits neg, start all over again.
+
+alright so basically  -- we were going to do a check vs. CV for equality weren't we? to break out of the loop? I don't think we need it now.
+
+copy a 0 to 0
+bump it up twice -- we'll loop back in only after the first bump?
+copy a 0 to 1
+inbox
+copy to CV and CV 2 - to start the sub loop over again later
+copy from CV and sub 0 - 
+if postive, do the overwrite, bump the subCount, but do the sub over again before outbox hits
+if jumpZ - do the overwrite, bump the subCount place primeCan into outbox and write SubCount to CV, loop subbing again
+if negative, do a CV zero check vs. constant zero - if zero, DONE and jump back.
+Otherwise, leave CV as is, bump primeCan and start over.
+
+I think I will need a constant 2 value. 
+
+So start off with like writing a 2 and a 0 for every numbered loop around Copy from 24, copy to 23, bump 23, bump 23, that's the start of the program.
+
+So my variables are 
+0 
+2
+primeCan (starts at 2)
+subCount (starts at 0)
+CV - whatever was from the inbox.
+
+I might not need a CV 2 if I do it right. 
+
+0 is your candidate(2)
+1 is your subcount
+2 is your CV
+I might need a CV 2, yeah, just in case you get negative right ouf the gate. Like if my number is 3 and I'm on 2s... then I'll hit negative right out the gate - I'll need to restore the 3 to proper glory
+
+so you grab the CV and write to 2
+
+remember you have 3 subtraction conditions:
+
+zero means... the primeCan is good - alright we need a new value
+
+AltValue - value from subtraction....
+
+say we have 15
+
+we copy from CV
+we subtract 2
+if we hit negative the very first time out, we start all over - means the number we are using is already more than the real CV.
+if zero the first time out, we can just copy CV into outbox and start over
+we have to store the 13
+bump the subCount
+take the AltVal and sub2
+we hit neg, we go duck it, this number is no good, we bump up primeCan and go back to copying from CV and subbing.
+we hit zero, we have to get accurate subCount and make that the new true CV
+
+
+negative means ... the primeCan is no good at all - bump primeCan up one and start over. CV should be good as it is.
+
+
+
+SO MANY GODdarn STEPS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HOW THE duck CAN YOU DO IT IN 28 LINES?
+
+MAYBE sub counter isn't needed at all?
+
+sub, sub, sub - neg - no good
+sub sub sub zero - chunk prime can into the box
+
+sub and sub again
+
+if it's neg the first time out, break the loop
+if it's zero the first time out... chunk primeCan into box and start over?
+
+okay so say 20
+
+start with primeC of 2
+stored val of 20
+copy 20, sub - keep subbing because it's pos - when you hit 0, ... chunk 2 in? 
+
+seems like you'd still need a subCount.
+
+So you sub, it's pos, you have an 18 above your head and it's got to go somewhere. Store it. kick the sub counter up. Grab the 18 and sub again. It's pos. Store it. kick the sub counter up. Keep doing that until you hit zero - kick the sub counter up. plunk prime can into the box. copy from sub counter over to CV, copy from 0 value back to subCounter; do you kick the prime counter up? Or do you just try again? It seems like with 8, you just keep trying.
+You bump up the primeCan when your stored value - primeCan = negative.
+
+It does seem like you need to sub and sub again, though.
+
+First time out, you have to weed out the negative value, because that means you are dealing with a larger number. Or... you don't ever hit the... large... number...
+
+well?
+
+Say again with 3. 
+
+you sub 2. kick the counter up. sub 2 again and it's negative. Well that sucked. Reset the sub counter, kick the prime can up and try again.
+
+then primeCan is 3. You sub and hit zero. I think you need to chunk it into the box and do a 1 vs. 1 check. So we need 3 constants: If subCount - 1 = 0, we leave the loop and work on the next number. I think that might be more elegant.
+I think I'll leave the 1 on a different line to make it stand out.
+
+So with 20... you do serial subs with 2, until you hit 10 as your new CV. You start over again with 2 because it worked last time; you end up with 5 as your new CV. You try it with 5 and it fails, so you bump it up to 3. 3 fails. You bump it up to 4. 4 fails. You bump it to 5. sub gets 0, our subcount - 1 check also gets zero, so we chunk our CV into the outbox and move on to a new number.
+
+
+
+0, 1, and 2, besides the default 0
+
+
+
+I get so ducking confused when I start trying to actually put it in. 
+I think I might need to just put pieces of tape where I feel like I need to jump, because the jumping ducking ducks me up.
+
+
+Got it. Slept on it for real for real and got it.
+
+Here's what ultimately worked. the gobbledegook is base64 for the tape messages I put to split up the whatever.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  4
+    COMMENT  1
+    COPYFROM 24
+    COPYTO   23
+    BUMPUP   23
+    COPYFROM 23
+    COPYTO   22
+    BUMPUP   23
+    COMMENT  0
+a:
+b:
+    COPYFROM 23
+    COPYTO   0
+    COPYFROM 24
+    COPYTO   1
+    COMMENT  3
+    INBOX   
+    COPYTO   4
+c:
+d:
+    COPYFROM 4
+    COPYTO   3
+    COMMENT  2
+e:
+    COPYFROM 3
+    SUB      0
+    JUMPN    g
+    JUMPZ    f
+    COPYTO   3
+    BUMPUP   1
+    JUMP     e
+f:
+    COPYFROM 0
+    OUTBOX  
+    BUMPUP   1
+    COPYFROM 1
+    COPYTO   4
+    COPYFROM 24
+    COPYTO   1
+    JUMP     d
+g:
+    COMMENT  5
+    BUMPUP   1
+    COPYFROM 1
+    SUB      22
+    JUMPZ    b
+    COMMENT  6
+    BUMPUP   0
+    COPYFROM 24
+    COPYTO   1
+    JUMP     c
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJzzZGBgEBexCBYXWevPLnbMM0rC2s1ZMdiBR2+WtYflCZtqeyWfbEeL4ClOtdHRzisyo53jqzkcYztm
+W2+fLm8xf+5K3fbF9TpaC3dqi8zaqX1hopuua1++nmvfHWOn2R6WLRu22lkf4nAM2QO0hkE+ud5PLWat
+/66w1THlQcvKVAKip6oE8G95FbBh362gGUc+hyqfSIhuOBWZ1HBqf97XY6nF9/ebVmqsi6tyWHGwalfX
+xYpXdXVl8dVMxW8LLdPMEkBmvm0vbWKYdKkFxC6bo2p/cp6qff1CazeLDRPyS3b/mzRvj84UkBzj3kDf
+1eskG+oXOqwA8U+d3OAke0Yh0uz89azFV/bURl5/VXft1rKynrs+6TX37wTcv69qz3/rfYrsmYebGEbB
+KBjGAADoy3tZ;
+
+DEFINE COMMENT 1
+eJwzZ2BgWMX3xesL9+EwPe6qDD3uvpov3IVz+Pg11rGLqe7eJh+yR1h97qo0zT/zdbQuTDypua9gmeKd
+gGLpe85bhPktfrO0qQONYCiyKpxTZGV96KlF+oU7xpPvxRv4PA7Tvv4MJOcW8c32bYxhlUFixCL55HWn
+QWJ5Ff8m5VXM2v6orOHUieI1N0BiHyZbBHNO/+IVO/OL18pFqvady1TtF61c6z9ptVnCpNWGVRmrLrVs
+Wl7cL7Pw7DzlWULLjWcILV82LWLRg6nPZjhPWzjhwEzXvrR5rn1X1z/c9G/DyR0Mo2AUjAKCAABFnGKz
+;
+
+DEFINE COMMENT 2
+eJwrYGBg4FQK9H2gYO0WJbHBqUtogxMff6b7Kr7DYVf4OeLXSlWUJsu6N2rJdXdqyXVO85LSWnhXZOsS
+EY6tS4BaGT7IKUQGyxvnLlPc1TVN+d+kl6rbp6dpbp/+WSt6Kkg+wlxYLsJ8i8Zqy6mhW+0cVmy1M6xa
+6rCvQNBtQv48d+liKe9LLct9Cucs9xFavs/59OpAu9Orj9rkrQTpnakv1jtT/2AyiN2T4RfVkzE1NCdn
+rb902XSPjTXHPDfWTA1VrZ6c9KhMuvhGoWSDUS5DW11Zd2dHdXF/Re38uSK1GutMKzdv1C55uOl9xuaN
+IHOyug8mR/UytAlM2D7dauKzGccm6UwxniFdbDyDubJtVnG/z+wLE2/OEet1W7QiE6T+3ha5tOotk5Ou
+rjdLMFtiliCz8H2Kzdy3hTZzJRuY5zG0/VlyqaVz2au6N8s8S0RXSBcvWllRqrFp4QSJLc9mVG85Ow9k
+huF2n/SS3e6NUgf+TeI6pDOl/ahrn8jx7k7dU1fKdU95loTsD1tfsvv+fpDaqY/a1F88CfS98ay7E8T/
+f7uiNOlOX03Qve7OmMdn5+1/vHXJiyePl1o//zN/xrt9BQyjYBRQCADWB8S8;
+
+DEFINE COMMENT 3
+eJxjYBgFo2AUjGQAAAQEAAE;
+
+DEFINE COMMENT 4
+eJzzY2BgqOB4YLaQM9uKj58j/qxY4ZwoCaHlLZJzVzHIti8+Jus020ftbeFnrbX+j3RO2JjpB/p2GrLm
+rLYUWv7P+s98Q6frWS9c7jkDjWFoCM/T1Q2112kP4HGN9b8T8MtPv/1WUOc03dBnMwJiRWYtjo+eapn2
+qq4noyqjJ2O6x7XUTaaRSYLamQkRagnRZ5VAZggVNjoKFV6YWFr4VMa6SEdCpLabN7yxm/dJk4vQlZY2
+9Sst2Va7G4MdXMt5XF3LlXwOVh1MbmxybwTprZ3KwFU79UU3iL1oJb/FgZkKkbEzV8eUzZmQL7pi4QSQ
+ePrJbKtXR1tMBHe3mEzZ3ug4ZXugb/SOqaGMexUi6w5MTpp+2Cdd5PjbQpHjhlUHj/TVdG/qqwHpa33y
+V+zFk8NhILbSk11dDKNgFAwTAAAXPHv7;
+
+DEFINE COMMENT 5
+eJzzZGBgCOfRkXDn+2kwS+Bm7BFBsV6gEIOy6jdbTqWUxGWKW5cIq+etzNdzWBFh/m8Sv9WllqtWbwuL
+rKzd7hgHO5jpBzuA1Hu7cgXds+eIP2rjWTLb+lLLbOs/8wPthJavc328NMVDa+F0v9iO9oAr5e0Bq2N+
++R0Oc/G5EwDSdyvoU3hCNP+WWVF5Ky9H+kVtjuUKmpzIFbQmpTZ6TYpPenPy9Sy3CNYckNp/rfY6s1qn
+hqq3Sxff7eycBhJj75YuntLDmrO2f0Wm1cTrWXMnLitLnhRfnTzJtW/uxAsTv/dcmAhSJzzHtU951vsU
+m7kHk0F81lWPNZ+u5Yi/uh7i36MblzQHbmauZNxbGw3ib908IV9iy6WW6B0Qe0bBKBiuAADUWXJj;
+
+DEFINE COMMENT 6
+eJzLZGBgaOQ9YRPOcycgnMc4152PufKfgGFVlci+AnYxn3SgNMNzycNhWnLLyj7IuTcyyB7zZJBtdOyV
+s3b7IKfk80HuTsAxWa4gkDpnxW+2ZerfbMO0A33DtA+H6WitjlmmyBEPkiuyYs0B0Vy+fTW//C61bAjs
+nKYbGrLnl5/IrBAv5so+z7eFfZ5yaVLeHPHtARzxqyL2FayK6KuRDX9VB9L3LHlP7d249JC7cWv92RKU
+fEBiNVk+6fezrmeB2Dk5s6xB9MWKlMSLFT7pFytWx/yuVIjsqK6Nrqh9n8JSPznpdL1fVHjj1NDGpsNh
+5q3vU0Dqu9qrMqb0+KT/nPEp/OWstf4vZx3zVJ6V6f5zRqb7smmBvlJTp4ZKTU3Kc57mWQJSb94aPZWv
+RWfKxproqTMqz867WBG2fkblrO0d1d93guSLJ5xeXTzBYUVLn9Dyu515K8U7T68W75y13aBn1vaoXrut
+e3t/rvHq37zRq3/WdoEJqrtBeoxnfN9pPGPGkWkzcraB+Mqz8laWzclb2T9/1vbP80P2MIyCUUBDAADo
+c6jT;
+
+Recoordinator is easy
+
+it's just a minus 4 and remainder type situation
+
+for less than 4, just don't bump the counter up when it hits negative, and then add the number you just had back to itself twice to get a positive - the remainder is the first coordinate, the counter is the second.
+
+BOOM
+
+so you need a variable for remainder, init at 0
+and a variable for counter, initialized at 0
+and you need to stow what's in the inbox - like we did last time, but probably just one CV variable
+
+subtract - if neg, subtract itself twice to get pos value, chunk into remainder - and then chunk counter (0) and remainder into inbox, move on to next number
+if pos - store new number, bump counter up one
+if zero - store new number, bump counter up one, basically no difference there - but also you're done so go to finishing procedures
+
+
+seems easy peasy
+
+alright, revisiting the idea, later on:..
+
+vars and constants;
+
+4 and 0 constant
+subCount 
+remainder
+currentV
+
+important to overwrtie subCount and remainder to 0? or just go through loop all over again...
+
+so let's solve for 2, and 14
+
+copy from 14
+copy to 0
+copy to 1
+inbox
+copy to 2
+copy from 2
+sub 15
+copy to 2
+
+either way we now have a Jump N
+
+jumpN - sub 2, sub 2, copy to 1, copy from 0, outbox, copy from 1, outbox, jump back to beginning (solves for 2)
+
+positive result: copy to 2, bump 0, loop back into subtraction
+
+I might have them all end up in a negative state...  I think it'll still work!
+
+I got it to work without needing a remainder variable. When you get the remainder, you just chuck it right in.
+
+So I'm at 15 lines and 88 steps.
+
+Still done though!
+
+The last problem is 3 sort again, only it's 4 sort with 0 terminated strings, and with letters.
+
+I feel like this should be eminently crushable.
+
+
+
+Alright I've figured out the last problem. Had a little walk and talk session.
+
+I've also figured out iterative sorting. 3 sort, 5 sort, no big deal.
+
+It needs a bump down counter and to grab addresses from the value inside the counter, and when negative, jump to the next number. 
+
+We sort with W, L, L2, L3, etc, - loser one, loser two, and so on.
+
+The two sort separates A and B into winner and loser boxes and grabs from those. 
+
+Three sort grabs C - compares it to the Loser and shifts IF NEEDED, then compares to Winner and shifts IF NEEDED, then you're done sorting; grab the results - chuck them in, bump the counter down, and when you're done, you're done, Bob's your uncle.
+
+you also need a comparison counter probably to tell you when you're done grabbing values to sort. That could be useful.
+
+so the idea could be basically plunk crap down until you hit the 0, but while you're plunking crap down, add crap to comparison counter and bump down counter.
+
+then compare values... or whatever, yo, and when you're done comparing, bump the minuscounter (and if neg, stop) and chunk in that value's address... wait a minute. You know what, it's no problem, we just need to put the sorted values on a lower part of the grid.
+
+So 4 sort grabs D - compares it to Loser 2, Loser 1, and then Winner (if it needs to go that far). It gets put where it needs to be eventually. A 5 Sort would do the same thing, just with more loser boxes.
+
+so going back to 3 sort...
+
+we need to store our 3 numbers, and a winner and loser variable
+
+here's how it goes
+
+plunk 3 down
+A v B
+sort into W and L - might have to jump back from neg condition, just to sort out C v L...
+C v L - if neg, plunk in C, L, W to outbox and start over
+if pos, battle C v W - if pos, L, W, C go to outbox, then start over, if Neg, W, C, L go to outbox. then start over.
+ I MEAN L C W
+So that's easy.
+
+That 3 sort works. I have it in 45 lines, 101 steps. Good enough for me! The last problem will be a little easier to just iterate through, since I have a 0 to start with.
+
+Okay so the last problem is anywhere from a 3 to 5 sort.
+
+Requires iteration. Also requires iteration down, to plunk into the outbox. Here's how it'll go... ish...
+
+We'll need a "5" variable at some point that gets reset. 5 is where we start storing Ws and Ls. 
+
+So the 3 sort outcomes were C, L, W,  -- L, W, C, and L, C, W... how do we bump up and down to make a counter stay on point with the next sortings?
+
+Well the first thing we need is a check vs. how many numbers there are ... or do we? Alright well let's just try to think about this.
+
+say we plunk down 3 numbers. We have a bumped counter that says 3. we aren't writing to address 3 - but we could use that 3 as a measure of some kind? To make sure we don't grab for more?
+
+We've figured out how to sort with the W and L system, but what we need is a numbered system... how to sort vs. what's there...
+
+So we sort A and B to 5 and 6. We sort C vs. 6 and then maybe vs. 5. 
+
+How does that look? And how does it look for a generic case instead of B? If we look at B as address A + 1 address?
+
+say we have a copied 0 to 21 and put a 5 on 22.
+
+The copied 0 makes a counter maybe? Who knows. It could be the start of our sorter. (from location...)
+
+So we compare 0 to 1. Sort winner into 5 and loser into 6. We'll need an interated outbox procedure! Something like grab from 6, outbox, bump down the address, jump. 
+
+That's your 2 sort figured out, kinda.
+
+The winner and loser procedure could also be iterated. 
+
+You might only need an W and L variable for the more sorts.
+
+You might only need a W. 
+
+the numbers are already stored. 
+
+Winner goes left. 
+
+hmmmmmm...
+
+alright so your basic outcome is the same in 2 sort as it is in 5 sort, Remember that much.
+
+A v B. A to W and B to L, or B to W and A to L. Copy from L, outbox, copy from W, outbox.
+
+You add one more thing and you compare C to L. you have two outcomes - so you do a thing immediately or you swap the recent values and do another comparison, and then either do a thing immediately or swap values, doing a thing when you're finally done.
+
+What you need to ask is when you're done doing things; and how to reset numbers and such.
+
+A v B, okay, you just put a thing into 5, and then bump it up one and put the next thing into that. C comes along, and you compare vs. the current value and you bump it up either way to store the loser, then bump it back down to store the regular value. But then you have to do your next comparison; so then you have to bump it down if you win. But now you're down to 5 - how do you compare crap when D comes into the picture?
+
+You'll need an Address D (or C, or B) + 5 situation. 
+
+Hmm, you can do a bump switchover situation - bump the address of the value... that's cool... not sure what I'll use it for though.
+
+Okay so variables:
+
+0 constant
+5, constant? at 21
+number of inputs counter, possible loop breaker
+
+plunk our crap down as per 0 string helper
+
+compare add0 to add1 - put W on [21], bump 21, put L on [21]
+
+basic questions:
+
+HOW DO WE KNOW WHEN WE HAVE COMPARED ALL POSSIBLE INPUTS and no more?
+
+How do we know when we are finished comparing a number?
+
+Finishing comparisons - alright let's try to solve for the 5 sort with iteration. That'll take care of the whole mess.
+
+So we put down 5 things and the 0 lets us know when we are done putting crap down. That's great. The work can begin.
+
+duck that. Let's write out the perfect 2 sort, first, just with numbers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+so we have plunked down our 2 numbers. We have a 0 and a 2. We might have a constant 5 also for our storage.
+
+We take A and subtract B. Copy the winner to the winner spot, copy the loser to the loser spot. Take stuff from the loser, to the outbox, then winner, to the outbox. That's the way we did it before... but this way is going to be iterative. 
+
+So We take Winner to Constant 5. We bump 5 and take Loser to Bumped 5. We need a check for "are there more values to grab?" - has to be a number.
+
+Maybe we grab it in reverse order. duck grabbing A and so on. Why can't the last number be A? ducking A, eh? Then we can decrement, and when we hit neg, we know we're out of crap to grab.
+
+Okay. I like that idea.
+
+So first we bump our no. ins down by 1, before we do the comparison. That tells us which address to grab from. If that number is negative, we have no more inputs and we need to jump to the outboxing procedure.
+
+That's one question answered - we do a last in comparison type of scenario.
+
+The other question - about storage of winners and losers, the general sorting and how that can be iterated...
+
+Let's see....
+
+So we did some more thinking and we have at least 5 variables to consider
+
+
+1 no. of inputs - this is going to get decremented, and then we copy the decrement, and then have
+2  inputs minus 1 (second variable) - basically our next number to grab
+3  5 - constant - used in addresses to store and grab from
+4  comparisonIterations - starts at 0, so it's another number to copy... OI. This tells us how many times we have completed an input comparison. We add it to 5 and that's our next variable
+5 comparisonAddresses - work through and sort by one, decrement
+
+eventually compareAdds needs to hit a 5-5 = 0 to get out of the comparison loop
+
+6. Outbox - It's Initial Inputs (the real number) plus 5 - when it's time to outbox, we take the value in that address, outbox it, bump it down, do a minus 5 = 0 check, if not 0, outbox the next number and so on. Runs back to Start after it hits the 0 check.
+
+Basically we convert our initial AB to WL, then run everything vs. the latest L; copy from L to new L and copy from ins-1 to old L address, (bump up, copy from and to, bump down, copy from and to), do a minus 5 on the compAdd b.s.; if breaking out of the loop, see if you grab a new input - Ins-1 sub 0, if neg, get the fark out? I guess proceed to Outbox from there. 
+
+Yeah, sounds about right?
+
+copy from inputs
+sub inputs minus one
+jumpN to bleepblorp
+copy from inputs (the winner)
+copy to bumps
+bump bumps + 1
+copy from inputs minus 1
+copy to bumps
+compare bumps to outbox#
+jumpz to outboxing
+
+grab C (after bumping down inputs and inputs - 1, grab from - 1?)
+sub bumps
+jumpN to bleefbloff
+copy from inputs - 1 to bumps
+bump bumps + 1 
+copy from inputs to bumps
+
+bleefbloff - if C loses to L
+bump bumps + 1 and write C to bumps
+
+now to do C vs. W
+
+bump down bumps 2 times
+compare inputs - 1 to bumps
+
+hold on
+
+I thought about having a pure W address
+
+like address 15. Could work.
+
+yeah. It could really work.
+
+Okay so here's what we do with a W address.
+
+duck I DON'T KNOW
+
+arrrgh.
+
+Okay.
+
+
+
+...
+
+A V B
+
+sort into W, L
+
+new vs. L - either write into + 1 add if it loses and start again, or
+copy into offsite W, copy L into + 1 add, copy offsite W into current add
+
+reason we don't do current input situations is for the 2 and 3 back...
+
+bump has to go down to compare next value...
+
+we need a bumps - 1... a winner and loser slot.
+
+bumps and bumps - 1
+
+Bumps starts at 6
+bumps - 1 starts at 5
+
+a v b - sort into b or minus
+C - attack bumps ; if lose, b and minus go + 1 and C goes into B
+if win, bump both and copy from minus into b, and copy C into minus.
+minus is the winner.
+then bump both down and have C attack minus; or something.
+
+bump down inputs and inputs - 1 
+do inputs - 1 sub 24 (zero value) if neg, jump to outboxing, right? No more numbers to grab...
+
+otherwise jump to the next number (inputs - 1)
+
+COPYFROM, yo
+
+b and minus, not sure I need the minus to be honest
+
+minus starts at 5
+b starts at 6
+
+w goes to 5
+l goes to 6
+
+c (input - 1)  comes in and challenges 6 - if it fails, bumps and m get plus 1 and C goes to b; then input check is done and so on
+
+if c beats l, b and m are bumped but this time minus goes to b, c goes to minus
+
+bump and m get chunked down 2 points and you try again
+
+ (bump, minus is W) L - 5 = neg, break loop for checking and grab next input
+input - 1 - 0 = neg, proceed to outboxing
+
+outbox from stopgrab and bump down, check stopgrab - 5, if neg, don't do it anymore and start all the way over
+
+
+
+
+
+alright so if L - 5 = neg; 
+
+shift input and inp - 1, 1 down, each (bump - 1, copy, bump - 1)
+do your input - 1 minus 0 test, if that is neg, go to outboxing
+reset W to 5 and L to 6. 
+
+grab the next input if you can (inp - 1) and get to it
+
+outboxing like we said, not that hard
+
+
+copy from [outbox]
+sub 5
+if neg, jump to start
+copy from [outbox]
+outbox
+bumpdn "outbox"
+jump to copying again 
+
+okay so it partially worked... hmm...
+
+so...
+
+sort into W and L.
+
+then not do those in a loop again...
+
+we failed to sort out A and B winning have separate starting "next" conditions.
+
+
+
+
+
+
+
+
+
+
+Almost had it...
+
+I was having problems with the 5 sort... it was trying to copy from an empty value...
+
+and then I had problem with a 1 sort... I didn't think there'd only be a ... one...
+
+I thought it had to be 3 to 5. For sure.
+
+Two minimum, though. Turns out it's just one.
+
+So we need a way to know if it's just one. So we do an initial 0 minus Inputs M - if Neg, we just go to outbox procedures.
+
+Outboxing - Inputs + 5...
+
+I think what happened before was that I was tripping the outbox procedures prematurely.
+
+So what's supposed to happen in a 5 sort?
+
+I had nailed it before on letters alone. I don't know why numbers ducked me up. I put 'THINK' in the box in the correct order.
+
+
+Alright so test first for just one number; you always test for that outboxing condition, I suppose.
+
+COPYFROM 24 SUB inps-1
+
+go right to the outbox if it's just one number
+
+anyway
+
+so the idea was to sort out a W and L first and then clash on the rightmost number and keep going left as it wins.
+
+clash, if you lose, write it to the right and bring in the next number. clash, if you win, copy the old number to the right and put your number in the current number. You check to know when to break the loop after you write and also set your L and W numbers lower so you clash to the next left number if you're still going to clash.
+
+That seemed like such an easy idea.
+
+1 sort - number gets plunked down and you fail the inputs check and outbox. Start over. Might even just have a jumpZ to outbox when you bump down the inps-1. I think that catches it.
+2. you do your a and b situation. You check for another number and it fails, you then proceed to outboxing.
+3. I feel like where I ducked up is that I needed to reset inps - 1 at some point.
+
+Yeah.... that's where a lot of crap went south. So when do we reset inputs?
+
+When do we decrement it?
+
+I think we should test vs. 0 first, I think that's another reason it's there.
+
+Test vs. 0. 
+
+Hmmmm...
+
+I think I got it.
+
+2 Inputs - one static, one not, 
+
+outbox - static input + 5
+
+duck. I had it before.
+
+I had the whole math situations worked out.
+
+Alright.
+
+So we have W and L. 
+
+A grab just chunks to W.
+
+B goes vs. A, which is... on W?
+
+(kay so we check vs. W? then write to a blank L? The problem is L won't always be blank...)
+
+We don't want like ACCC or some crap. Argamuffins.
+
+do we need the 5? I'm thinking we don't. 
+
+We can probably just do a "numInputsPlusOne" as our base storage slot. 
+
+Then have that number be part of our outbox.
+
+It also lets us not get totally ducked if there's a 6 sort.
+
+so insPlusOne
+Ins
+outbox? or just ins and insPlusOne...
+
+def. need 0
+
+W and L might work, or we might just have one Location, depending on how the math goes for that crap.
+
+Might need two spot variables for swapping.
+
+How to write from 5 to 6 without an extra variable? 
+
+Like maybe bump spot location, but then previous spot location doesn't have a variable...
+
+so W and L worked for us before, that's what we'll use.
+
+W (= insPlusOne)
+L (= W + 1)
+Outboxer = ins, static, later added to insPlusOne
+ins
+insPlusOne (base storage)
+
+so needing to bump to 5 every time...
+
+so keep the initial input as plus one
+copy it to w, l, ins, and Out
+bump up L, bump down ins and Out
+
+new variable - times clashed ....
+
+helps reset W and L when grabbing a new number. 
+
+If you grab a new number, bump up TC. 
+Reset W to TC plus P1, copy to L, bump L.
+
+That resets the locations for the initial clash - all the way to the right, every time. TC has to get reset to 0 again after you go for new set of numbers. 
+
+alright....
+
+there's got to be an easy way to just iterate the crap.
+
+blip, blop, bloopity doopity.
+
+I might have to just get rid of their loop entirely.
+
+Relying on it might have been a crutch.
+
+Plunking everything down at once might not even be a good idea. Also, the iteration might not necessarily be a good idea, the way the game does it.
+
+Alright, try to do it my own way....
+
+
+So you go to the inbox... and... hmm. You grab a number. Plunk it down I guess. Stop if the next number you grab is zero. 
+
+I might have a 1 - 1 check for a 1 sort. I don't know. I might be able to sort out the 1 in the loop somehow.
+
+So maybe we keep their loop. It's not bad. We get a zero and number of inputs.
+
+How do we use the number of inputs?
+
+1. We can use it for an address to start on.  
+2. We can also use it as a backwards TC counter to let us know when we are "done" with numbers (when 0, finished, go to outbox?)
+3. Use it for W and plus 1 it for L?
+4. Soo.....
+
+Static Input number for those ^^^ things
+and then decrement it 
+and then restore it if need be?
+probably
+probably have to reset it to reset our W and Ls
+
+....
+
+Christ
+We still need a forward ducking number
+
+W + TC I don't know duck it
+
+
+
+---------------------------------
+
+
+pbbbbbbbt
+
+got some stuff to do
+
+
+okay so verizon sales and parlay into car sales eventually
+
+-----
+
+KUMITE SORT
+
+fighting tournament style is how I eventually came up with it
+
+
+A vs B, C vs D, etc.
+
+transitive property takes care of the rest
+
+so the basic plunking and even clashing can be done in loops of pairs
+
+or maybe just the clashing
+
+leave the plunking as is but maybe put in a 1-sort
+
+Okay so you can have a walk up counter starting at 0 and walk up plus one
+
+do a walk up vs. inputs check
+
+grab from 0 
+plunk down at 5
+grab from 1
+sub 5
+
+put the winner at 10 (have a counter for this crap, too, for next winner)
+that's your basic clash, basically everything can be clashed at 5?
+
+then grab from 2, plunk down at 5, grab from 3, sub 5, put into next winner spot
+
+single entry would be like grab from spot, plunk down on 5, I guess you could sub 5 with it by itself and if it's just straight up zero, put it in the winner's spot before even trying to grab the second number. 
+
+I mean it's extra steps but it does sort out a single entry.
+
+our walk up counter has to be checked before plunking crap down, to be vs. whatever.
+
+I think a winner counter needs to be implemented as well; that could become the next inputs counter. Then we can throw the ... crap. We still need the losing values.
+
+we might need a constant 1 kept as a check against our inputs counter so we can do a zero test, and know when we're done "winning."
+
+
+Okay. Okay. We'll figure it out. 
+
+alright. again let's go over this.
+
+visually, I can try to write it...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+it's a 2 grab single input implement situation
+the clash is in the 2nd grab; if it doesn't grab a second one, there isn't a clash
+which means 2 jumpZs in the loop, the first jumpZ after the inbox, is for even numbers of inputs.
+
+So, that sorted. 
+
+I was thinking there probably won't be a 6-sort. I'm really hoping not. Maybe I can hardcode some of this crap.
+
+So the winners could be plonked onto 1 and 3? and even numbers are losers?
+
+if we only clash if there are 2, then the single case never has to worry about grabbing some bullcrap
+
+or we can do like we had the W, L spaces, maybe only one of those, starting at 5, and that could be our winning row, as it were
+
+plunk first clash winner down at W, plunk next clash winner down at W after it gets bumped up one time
+
+after crap is plunked and initial clashed, we'll have our first round of winners
+
+you have to enumerate the number of losers
+and kick them down when they win
+row of glory - where the winners go
+when there's one loser left, kick that one to the outbox and start kicking winners over as well until you run out of winners
+
+your two first winners will be the best? AW heck.
+
+the single case needs to take on all comers starting from the winner.
+
+It's not automatically a loser. I think I need to specify a single case situation, maybe give that its own address?
+
+But how?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Figured out the last problem. It's easy. It's not going to be "optimized", per se, but it'll do, pig.
+
+Inputs for Outboxing - when it's time to outbox, will get decremented as it goes, with checks vs. Neg or Zero to determine when finished
+Inputs for Decrementing the Clashes (next target) - gets reset to "Inputs, Decremented After Clash Series" when a new num/letter is grabbed
+Inputs, Decremented after Clash Series (done with one letter/number) -- "Grab Next" - check vs. Negative or Zero to determine when it's time to outbox
+
+Temp Address -- Winner gets written here. Loser gets written to the Winner's space. Probably hardcoded, like 16 or some crap, just because.
+
+Instead of a Loser/Winner variable, you just adjust address for inputs as needed, to both grab, and then reset for next bout, as determined by how the battle turned out.
+
+So crap gets plunked down as per the initial program help.
+
+No problems there.
+
+We'll need one more Variable. Next Target B. It's the first Next Target, minus one. Target B gets the Neg. Check for when to try to grab the next number or go to outboxing.
+
+I think that also works for our 1-sort. Target B would start out at Neg 1. GrabInput gets decremented, check fails, so you just go right to outbox. 
+
+I think that should work.
+
+targA targB GrabNext Outbox TempAddress
+
+Alright so, so far the plunking down of crap and copying over makes sense. I think TargB needs to be knocked down one before the fights begin.
+
+So copy from the location in targA and sub the location in targB. 
+
+If Neg, B won. 
+If not Neg, A won, even if A is equal, A wins because duck it.
+
+Okay so remember WHOA. 
+
+Target B can mean it stays. Loser stay right? Whoa.
+
+Okay so check it. Using the examples of 83, 38, 40, and 0.
+
+We try 0. 0 loses. We say duckity bye to 0 and nothing gets moved.
+
+We try 40. 40 gets copied left and 0 gets copied right. It seems like a waste of information.
+
+40 wins so it gets to continue. Look, it's dumb, but it'll work.
+
+38 wins next time and it stops. Then 38 starts out. 38 vs. 0. 38 wins so we know what to do. (38 goes to temp, maybe a tempwin and temp lose...) 38 vs. 40 happens. 38 loses, nothing needs to change. you seeing the pattern? we have sorted 3 numbers already.
+
+83's big turn is up. it wins. it wins. it wins. It has no more targets. Time to outbox.
+
+Outbox starts from inputs location - minuses one, checks vs. one, does it again if need be.
+
+Look, it's dumb as crap, but it works. It ducking works.
+
+So tempWin and Temp Lose are probably going to be a thing, but the awesome sauce part is that when the losing happens, you just cancel and grab the next crap. Also, the inputs for Clashing keeps getting reset. 
+
+So you have...
+
+Target A Input (this sub that) - this would be your grabnext kind of deal
+Inputs to Clash, reset every new Target A
+outbox inputs, stays until outbox time
+
+temp add -- maybe 2 of them... alright, win procedure for 83... 
+
+hmmmm
+
+a number vs. itself is a BAD IDEA. Just thought 40 vs. 40 would happen and that would count as a win and maybe duck things up? 
+
+or maybe it wouldn't be crap, depending on how I made it work.
+
+Might end up with a 1 sort that fights itself, but so be it.
+
+Okay so say it were rearranged. 83, 0, 38, 40.
+
+Okay now we're confused.
+
+So we grab from 40, have it clash vs. 38. 
+
+We win, so what do we need to do? copy both the winner and loser to temp spots, and then swap them back to where they need to go.
+
+But what do we do in the case of 83, 0, 40, 38?
+
+Well, 38 loses... I forgot 0 was the string termination. Ha. 
+
+Okay, we'll include a low number instead for the sake of figuring this thing out.
+
+83, 38, and 40 make a great case, though.
+
+Maybe that's simple enough to help me figure this out.
+
+So 40 and 38 would go head to head, and 40 would swap with 38. 
+
+40 and 83 would go next, and 83 wins so nothing needs to happen.
+
+That would be the end of the clashing.
+
+Let's try 83, 1, 38, 40.
+
+Similar to before.
+
+40 smashes 38. They swap. We still have our "outer" input but we're going by one on the inner one.
+
+Looks like this 83, 1, 40, 38
+
+Now 40 takes on 1. 40 smashes one.  Again, they swap. Still on 40.
+
+Looks like this: 83, 40, 1, 38
+
+ah.
+
+So 40 takes on 83. 83 frigging wins. Nothing changes place. Looks the same as above.
+
+I think we don't decrement the outer loop. We just pick back up from 38, in the old spot.
+
+38 beats 1. Looks like this.
+
+83, 40, 38, 1. 
+
+38 loses and then nothing happens.
+
+Then we try 1. 1 loses and nothing happens.
+
+We have to have decremented a number of steps so we know when to break out of the loop.
+
+The surprising thing here, though, is we're always starting from the same place.
+
+Okay, let's try different inputs. 5 of them this time.
+
+PLUG AND CHUG BABY, BROSEK STYLE BOOOYAAAA
+
+Alright 35 18 99 24 87
+
+Okay.
+
+so we grab the last one, 87, chunk it vs. 24. it wins. Looks like this
+
+35 18 99 87 24.
+
+Still on 87. Remember we only start with the last one when it's new number time.
+
+so 87 loses to 99. Okay, no problems there. Maybe we can have 87 stay where it is and keep clashing anyway. The problem is though... I might end up having it look like 
+
+87 35 99 87 24
+
+and we can't have that. Also, it would be hard to put 18 on the last number.
+
+Alright so we have a good input case.
+
+35 18 99 24 87
+
+Oh, okay.
+
+Let's try this out.
+
+87 vs. 24. We swap. Looks like this.
+
+35 18 99 87 24
+
+still using 87, 87's home location is updated
+
+tries 99, 99 wins but 87 is in temp maybe still
+
+so 87 goes vs. 18. 87 crushes.
+
+so 18 gets put in separate temp
+
+temp18 goes to 87's home
+temp87 goes to 18's home
+87's location is updated
+
+looks like this:
+
+35 87 99 18 24 (weird)
+
+87 vs. 35. 87 crushes. regular swap occurs. 
+
+87 35 99 18 24
+
+check happens and we cut back to last number.
+
+Last number is 24. 
+
+24 vs. 18. swap happens.
+
+Looks like this
+
+87 35 99 24 18
+
+24 vs. 99, no go
+24 vs. 35, no go
+24 vs. 87, no go
+
+let's try this again or we'll be stuck on 18
+
+35 18 99 24 87
+
+Alright so we start with 87 vs. 24
+
+35 18 99 87 24
+
+87 hits 99 and... I think we need to do a winner sort from there... 99 should be the next number up.
+
+99 vs 18, swap
+
+35 99 18 87 24
+
+99 vs 35, swap
+
+99 35 18 87 24
+
+yeah... yeah... do a winner sort... if TargB wins, have Targ B go on a loop of clashing.... duck yeah.
+
+So we try that tactic with 24, 87 wins. goes against 18, swap, 35, swap, 99, nothing happens, 99 tries to do victory lap but runs out of targets.
+
+99 87 35 18 24.
+
+24 goes again, it beats 18. 35 wins but it fails. 87 wins but it fails. 99 wins but it runs out of targets.
+
+duck YEAH DOAGIE
+
+so it's kind of a loop in a loop.
+
+So... we grab from a static last place and run that number through, decrementing as it swaps to win.
+
+If that number loses, we take the "winner" and run that as our next candidate to keep swapping. And we keep doing that with the next winner, and the next.
+
+We decrement a "times grabbed" thing every time we bust out of the loop and then grab all over again.
+
+It'll be cool! Recursion, yo.
+
+So...
+
+Targ A vs. Targ B
+
+if Targ A wins, Standard Swap, blip blop
+If Targ B wins, Targ A becomes Targ B and loop? Yeah I guess. 
+
+So let's try this again in actual game programming terms
+
+35 18 99 24 87
+
+plunk down auto loop
+
+copy outbox to timesGone, targA, targB, bump down outbox, targA, targB
+
+have a temp spot
+maybe 2 temp spots
+
+use stickers maybe
+
+grab from "TargA" sub "targB" 
+
+if TargA wins (if not negative), copy from targA to temp
+copy from TargB to Targ A
+copy from temp to Targ B
+dec Targs A and B
+try again (grab, sub)
+if TargB = neg, bust out of the loop and check vs. timesGone, if timesGone is 0 or Neg or whatever, proceed to outbox
+
+outbox from outbox location, dec and do it again, break out when neg
+if timesGone = not neg, copy from Outbox to Targ A, copy to Targ B, dec Targ B,
+and start loop again of grab from Targ A, sub Targ B 
+
+if Targ B wins, basically do the same "dec targs, try again" situation; 
+
+I think this time I have actually figured it out.
+
+Okay let's see what happens with my example.
+
+35 18 99 24 87
+
+outbox goes to 5. decrement it one, copy that over to targs A and B and times Gone. Dec Targ B.
+
+So grabbing from add4 (87), you sub 24. 87 wins. 87 goes to temp. 24 goes to TargA. 
+Looks like 35 18 99 87 24. Targs get bumped down. We pick up from 87. 99 happens. Targs get bumped down. We pick up from 99. 99 beats 18 and they swap. Looks like 35 99 18 87 24. 
+
+We pick up from 99 again. 99 beats 35 and it looks like this 99 35 18 87 24.
+
+99 has no more targets so it busts out of the loop. TimesGone goes down one, Targs get reset. 
+
+We pick up from 24. 24 loses. No swap. targs go down. We pick up from 87. 87 crushes 18, swap happens, targs go down. Looks like 99 35 87 18 24. Yeah. I think this is going to work. 87 crushes 35. 87 loses to 99. 99 becomes the new target but breaks out of the loop. TimesGone goes down, Targs get reset, we start over. Looking like this 99 87 35 18 24. 24 is up again - it beats 18 but loses to 35. 35 loses. 87 loses. 99 has no targets. TimesGone should be down to it's final check and out of the loop it goes. 
+
+Outbox conditions are met now and we chunk out add 4, dec, check, add 3, dec, check, add2 and so on until we check and it comes out negative, and we're back to the beginning of the program.
+
+nOW TO PROGRAM THE darn thing
+
+Okay! So..
+
+MOTHERduckER GAVE ME A 10 SORT!
+
+But I sorted it!
+
+I sorted it all!
+
+... except the case of the 1 sort.
+
+got it sorted!
+
+Just threw in an extra copy from, and if zero, just cut to the inbox.
+
+It all worked! Worked great!
+
+Came in at 37 Lines, 1645 steps. Seems like a lot but that 10-sort is a motherducker.
+
+**********************************88888888
+
+
+been tweaking Digit Exploder. Went from 53 lines and 195 steps, to 41 lines, 194 steps. Had some clutter - dupe code and extra jumps to go with it. 
+
+Shaving it down isn't a bad way to kind of optimize. 
+
+Okay so digit exploder. 
+
+down to 36, 195.
+
+Had 31, 198, but it stopped working. Don't know if the game "cleaned it up" for me or whatever.
+
+Alright.
+
+Let's try it all over again...
+
+take your inbox
+copy it to your final
+copy a 0 to 0, and 1
+copy from final, sub 11, if neg, copy from final and sub 10, if neg, cut right down to copy from final, outbox, that takes care of your singles
+
+to take care of your tens, (if sub 11 started out neg), if sub 10 is not neg, bump up T and copy to 2, loop back to copy from and sub 10 and so on, cut to outboxing from 1, and then 2.
+
+to take care of hundreds, if sub 11 wasn't neg, bump up your hundreds and so on.
+
+Should actually be easy to output, now that I think about it. Outbox hundos, tens, ones. Shouldn't be a problem with a 0 in the tens because it'll all be in order.
+
+right.
+
+
+So say our number is 308.
+
+copy 308 to final.
+sub 100
+copy 208 to final and bump up H counter.
+copy from 208 and sub 100
+copy 108 to final and bump up H counter
+copy from 108 and sub 100
+copy 8 and bump up H counter
+Looks like 1 0 8 
+move down to tens test and fails, moves down to shipping - grab H, T, and Final and it works. Noice.
+
+Now that THAT works, how do I do 74?
+
+Hmmm... copy 74 to final.
+fails the hundo test. No big deal. 
+moves on to tens test. goes down to 64 and bumps tens. yeah.
+
+so you have it go down to shipping but how do you cut the hundos out?
+
+Otherwise you'd ship 0 7 4. 
+
+How did we do it before?
+
+I think we tested, first... for if we had tens, or ones...
+
+Alright cool. I did a test at the end, for outboxing. Made it simple. 
+
+Cut it down to 28 lines but 211 steps. So one side is optimized -the size. Here's the clean code:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    COPYTO   2
+    COPYFROM 9
+    COPYTO   0
+    COPYTO   1
+b:
+    COPYFROM 2
+    SUB      11
+    JUMPN    c
+    COPYTO   2
+    BUMPUP   0
+    JUMP     b
+c:
+d:
+    COPYFROM 2
+    SUB      10
+    JUMPN    e
+    COPYTO   2
+    BUMPUP   1
+    JUMP     d
+e:
+    COPYFROM 0
+    JUMPZ    h
+    OUTBOX  
+f:
+    COPYFROM 1
+    OUTBOX  
+g:
+    COPYFROM 2
+    OUTBOX  
+    JUMP     a
+h:
+    COPYFROM 1
+    JUMPZ    g
+    JUMP     f
+
+
+I'll admit, it's a lot of jumps.
+
+I like the Copy From, Jump if Zero thing. No need for real math there.
+
+Just - checks to see if I have put hundreds and tens in, and then jumps to outbox accordingly.
+
+
+Alright, going back to Digit Recoordinator. It is a 14 and 76 challenge. I have 15/84 on one program. I'm not sure I can optimize for both.
+
+I saved 4 steps, previously, just by moving a jump.
+
+seems like you need to store coordinates; I could use 14, though, and have 14 sub 14 to knock it back down to zero.
+
+I don't know how that saves any steps, though.
+
+I changed the bottom "add 15" to just "copy from 2" and it has the same result, same number of steps. Interesting.
+
+I was able to intuit from my 18/101 down to the 15/84. Cool. 
+Alright! Got it down to 14/76, optimizing on both ends! Sweet. I took out the copy the number part before the loop and put the add 15 back at the end - means less storage, only stores when it needs to be stored (put the copy from 2, just before the jump back into the loop, saving one copy step). 
+
+Sweet!
+
+******* now on to the prime factory... ****
+
+I think it'll be easier now that I know what I'm doing.
+
+Alright so this is about prime factors... not necessarily a prime checker.
+
+seems as though I used too many variables.
+
+Probably could cut at least one of them out. I think I'll start from scratch. Just give myself some hard inputs and see if I can't solve for those on my own.
+
+The game gives me 20, 4, and 11. Those are pretty good!
+
+The end result should look like 2 2 5 2 2 11. 
+
+I had a 0, 1, and 2 as constants. I'm not sure I needed the 1. The 2 makes sense - the first prime, after all. I'm not sure why I reset a lot of things to one. Okay, looks like the one was part of a loop breakout, just a one minus one = zero kind of thing.. Hrm.
+
+Yeah, scratch might be best.
+
+2 15 16 would be good canditates. 
+
+2 3 5 2 2 2 2 should be the result. 
+
+Okay, I feel like we need the zero constant, maybe.
+
+2 is the first prime so that probably needs to be a constant; copy over and bump twice. 
+
+So what I did was set a Prime Candidate - I should probably, if I'm really thinking about it, store my Primes - and then divide only from those. 
+
+I have plenty of space! 
+
+So set like the actual mathy stuff later down and have a counter type deal to work on what prime to divide with... kind of doing something like we did with the sort, have a counter up, reset the counter on the next candidate?  Might save some time.
+
+It'll still try things... but it's all good. If we took care of it right, it shouldn't be a problem.
+
+So we basically have the "amount of times divided" overwrite the old number and throw our prime into the outbox and try it again.
+
+If it hits zero, do a thing. If it hits negative, do a thing. If it's positive, just jump back into the subtraction loop. That's pretty easy. 
+
+The neg - reset the times divided back to zero, bump up the prime and try again.
+
+(what did I need the 1 for? Maybe I was tired/mad)
+
+Make and keep a 2. Copy a 2 and 0. 2 is the currentPrime and 0 is the times divided.
+
+see if we can't throw a "copy from, if zero" situation in there somewhere.
+
+so let's try this 9, 10, 3 situation.
+
+we plunk down 9. We subtract 2 a bunch of times. we find that it doesn't jive.
+
+So we subtract 3. 3 works pretty great. It goes in 3 times, 3 becomes the new number.
+We try 3 again.
+
+HEY YEAH. IF WE OVERWRITE THE NEW NUMBER AS ZERO, WE JUST ... YEAH.
+
+3 goes into 3. Groovy. 0 is left. 0 is the new number - so we just chunk in our prime and move on to the next number. 
+
+If we SUCCEED AND GO TO OVERWRITE, AND 0 IS THE NEW NUMBER, THEN WE STOP.
+
+Boom.
+
+So we try 10. 2 works. it goes until we hit 5. we chuck 2 in and 5 becomes the new number. 3 doesn't work. 4 doesn't work. 5 works. we chuck 5 in and well, it only went the one time, (okay, maybe this is what I had the 1 for). 
+
+Or we just overwrite as one, try 6, it comes back negative IMMEDIATELY and wait that would just bump it up to 7... 
+
+Do we wait to bump the number up?
+
+Like okay... maybe... if we got to 0 on the "now" number and the "how many" number is at zero... we don't bump and quit out? I think that could work.
+
+Yeah. That could do it.
+
+We have to check that a lot but it's okay.
+
+So here goes. 9 10 and 3
+
+copy 24 to 23, bump it up to 2, this is going to be before all loops
+
+copy the 2 to 0, the 0 to 1. plunk inbox down to 4 for neatness.
+
+in this case the top row will look like 2 0    9
+
+Take 9 - and store a backup 9 on 3. sub 2 and you get 7, put that on 9, and bump up the 0 to 1 and try the loop again; keep doing that until you hit negative. When you hit negative, copy from backup to original recipe, reset address 1 to 0, and bump up the prime and try again.
+
+3 will be the next prime - subtract and copy and bump, and so on, until you hit zero - and then check (not zero at bumped), bump it up, then overwrite from 1 to address 3 and 4, and try 3 again...
+
+this time it'll get reset to 3 0   3 3.
+
+Okay. So 3 goes into 3, yay biscuits, but we do the check, it hasn't been bumped yet, and we chunk 3 in and go to the next number. No need to duck with 4 at all.
+
+10 is up, What what? Reset as normal.
+
+2 goes in. We get 5. Chunk out a Deuce. Overwrite as a 5. bump up to 3.
+3 doesn't work, reset.
+4 doesn't work, reset.
+5 works, but we haven't yet bumped up our counter; 5 gets chunked in and we're done.
+
+Yeah I think we're good after that. We've already done 3 when we did 9. 
+
+*********************8888
+
+**
+
+took a break on that one.
+
+So I went back to Sorting Floor. I'm noticing I made a pretty big error and make a lot of extra steps happen. I will have the correct solution and it'll keep going because it has to fulfill the "times gone" counter. 
+
+I don't need a "times gone" if I've already got it sorted right in the first place.
+
+Okay, I just tried taking out the "times gone" lines and I got the first 3 sort banged out, but it ducked up the letters.
+
+Let's try this again.
+
+I'll probably have to "from scratch" it again.
+
+10 22 88 99 26 15 23 27 
+
+Okay let's solve for that.
+
+Or let's just trust that our sort works when our target A is negative?
+
+
+alright coming back to working on digit exploder
+
+just need to crank down some steps
+
+I think I can shave off the steps if I find a way to make the copying 0s only when absolutely needed... 
+
+so something like do the math...  but I can't figure a way of getting that stuff on the board without adding in extra steps like a counter... hrm...
+
+Might not need so many variables.
+
+Might just need a TEMP and a COUNTER.
+
+nah, I need to store all 3 values
+
+I was able to be clever and do a subtraction and so on but it didn't save any steps. I moved a jump and saved a whole 1 STEP.
+
+So 28 and 210...
+
+I want to shave off the plunking down step if I can.
+
+Okay here's a thing.
+
+If it's a single...
+
+Take the number, sub 100. if Neg (which it will be) add 100, sub 10. If Neg (which it will be) add 10 and outbox it.
+
+That actually works for singles and doesn't require an extra variable.
+
+started from a scratch one and got 46/184. I like how it treats single digits, I think that was a big time saver.
+
+The Subtraction works a treat for creating a zero to place down. 
+
+The real question...why do I keep copying back to Ones?
+
+Why not just sub, kick, sub, kick, when neg, add back and then store value?
+
+Yeah. Might save some steps.
+
+got 44/199 on a cleaner looking one. So not doing the H and T as zeroes for the singles will shave off 15 steps? Seems like a lot shaved off when the singles are only 1 out of 4 inputs.
+
+Okay so I think I'll have to re-think it a little bit. I was doing okay with the 46/184 but something wasn't quiiiiiite right.
+
+Singles - Do a hundo check, do a tens check, chunk in the outbox and start over if both are nega. RIghteous.
+
+Double digits - has to fail a hundreds test first. So there's basically 3 outbox outcomes - 3 digits, 2 digits, 1 digit. If the hundreds test passes, then it's definitely a 3 digit outcome, no matter how many tens there are.
+
+So single outcome won't even have to store a value - just chunk it as a result of math.
+Double digit will
+
+okay that's what I was thinking of...
+
+take 74, sub 10, sub 10, sub 10, until it hits negative, then add 10 back and store that  value in ones.
+but wait huh? dude c'mon. You haven't stored a tens value so you don't know how many times it kicked down. You just have a ones by itself.
+
+sleepishness, man.
+
+I'd like to just not have to store stuff, like I can get away with on the singles.
+
+but you still have to record the results if you iterate subtraction.
+
+has to be like sub 10, copy to somewhere, bump + subtraction counter, copy from same somewhere, do it again, until it hits negative
+
+screw it. 
+
+Went back to Sorting Floor. I noticed I waste a lot of steps waiting for the Times Gone counter; I often have things sorted well before then.
+
+I might try it from scratch sometime, just a total overhaul.
+
+Times Gone was breaking me out of the loop, but I need another way to break out of the loop. Something more accurate.
+
+It has nothing to do with how well numbers are actually sorted.... in hindsight, I don't know why it ever really worked at all.
+
+
+.....
+Alright, came back the next day and made a more kickbutt 3 sort for practice. 37 and 115.
+
+Woot. All mine.
+
+Alright I see what the problem is with my Times Gone. It doesn't actually have anything to do with "when it's sorted." It's just an arbitrary number I chose to think how many times it would take. It's actually got nothing to do with the sort. I'm looking at a pause here on the 10 sort and it's going to go through it like 5 more times for no reason.
+
+Also, I need a way to skip the left-most numbers after those have been sorted. 
+
+In other words - Times Gone needs to be a Nums Sorted counter.
+
+Needs to be bumped up on the pop outs - And needs 2 purposes:
+
+1. Needs Targ A to check vs. it so as not to use those numbers (know when to pop out sooner)
+
+2. Needs to be checked vs. Outbox - when Nums Sorted/TG Sub Outbox = 0, time to outbox. 
+
+I think that would save me a duckload of steps.
+
+So initialize Times Gone at 0, bump it up when it's time to pop out of a loop, check Target A vs. Times Gone, Check Times Gone vs. Outbox.
+
+It's some extra lines but it will save me a lot of looping. Might bring my number down below 1k steps. It's going to go "oh, okay, leftmost number is done", which honestly it should be the first time through, the way I've had it set up. Then the next time the number after that should be done. When all the numbers are "Done", it's ducking sorted. 
+
+Yeah, holy crap. Did it up, and not only did it work, I shaved off 500 duckING STEPS. 501, to be exact. Code went from 37 to 40 lines, but the number of steps it took to run went from 1645 to 1144. So... WOOT.
+
+No, 1166. So 479 steps. Still DECENT.
+
+went back and put 46/184 back on Digit Exploder. I'm not sure where else to cut corners there.
+
+I will probably need a from scratch solution for the sorting. I might have to go back to my idea of putting the clash into the put down...
+
+but that... doesn't seem to solve overall.
+
+
+
+I'm glad I made this file. Some time later... Windows 10 had to be wiped and started over. I lost a lot of programs and things like save files... meaning I had to start HRM all over again.
+
+I'm back up to Alphabetizer but I forgot the procedure. Unfortunately, I didn't write it in here. No big deal. I must have solved it pretty easily. I can kind of do it now... I'm just not sure what to do with the second word, just yet.
+
+I'm going to start saving my code here, even if it isn't optimized, just so I have it in the future.
+
+Alright so far, I've got code to put down the 2 words. I'm thinking I need a lot of variables on this one:
+
+One, addresses of the first word
+Two, addresses of the second word
+Three, clash addresses to be bumped down, first word, and four, same thing for second.
+
+We'll need the "permanentish" stuff for deciding what to Outbox.
+The second Word will need a "Minus 10" check to determine when to stop Outboxing.
+
+alphabetizer so far:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COPYFROM 24
+    COPYTO   21
+    COPYFROM 23
+    COPYTO   22
+    COMMENT  0
+a:
+    INBOX   
+    JUMPZ    b
+    COPYTO   [22]
+    BUMPUP   22
+    JUMP     a
+b:
+    COPYFROM 22
+    COPYTO   20
+c:
+    INBOX   
+    JUMPZ    d
+    COPYTO   [21]
+    BUMPUP   21
+    JUMP     c
+d:
+    BUMPDN   22
+    BUMPDN   21
+    COPYFROM 21
+    COPYTO   19
+    COPYFROM 24
+    COPYTO   21
+    COPYFROM 23
+    COPYTO   22
+
+
+DEFINE COMMENT 0
+eJxjYBgFo2AUjGQAAAQEAAE;
+
+DEFINE LABEL 19
+eJyTZWBgEAm6E/A59J5zZkKo8f80e531BRFqpYU/DUoLlXzWF9yM5cypKH2WLNYrErR5I28k/5b9efxb
+ThRv3gjUypA86YFZ8qRsq1mtSj52dTdjD1Yl5V2skGxYUR49dUW53daLFU17O6pnHPnSsO50V7vl+eIJ
+lucZRsEoGAWDBgAAMas0iQ;
+
+DEFINE LABEL 20
+eJyTYWBgUFYN9O3X2ldQYdw5zcPSbutVq80bt9r9m3TO0Th3n7NnyYbArMO6oaq7H4efXn04+sJEtoTr
+WUBtDOzdqvaBHar27s33nPMq/KJSi6syfAqulCvlX2r5kXt23o9coeX7806vrivL2falIWSPenvIHoZR
+MApGwaACANYPMi4;
+
+DEFINE LABEL 21
+eJzTYGBg0JLr7tSSY2hzVmSudNM9HFZk1ejY5/nTINd3jt4vvxM2v/wOJuf6ljaleBTOeWfLe7DbVvlE
+iFfgSZEg60NA7QwBsTdj5ZNfdEtmpV8A8RfHT046k1AbbZl2J0Apf63/+oLDYesLfNL3503Ir8m6Un4s
+3b1RpNa9MbyxtImv5VLLrNbYjiNtz2Yktv1c86Rp1vbbtff3S5d9PZZa/PUYwygYBaOApgAAq4dGzw;
+
+DEFINE LABEL 22
+eJzTZ2BgUPJ97V7tq7qVAcR2bdfn8eZW/xawT7EgZJ3C3IizSsqxlloP4sr1XBJuu82N2BJa4JOXZBnv
+n/A9I6xof/auLt5s3SVzE0y2MUYV7boaWrQLZM6Woj0u6cW1yQ/LxCe+KW+eARJjKvrlUVRyOdy1Yne6
+Vf1tN+auXV0g8R8TPkVen7ppNoit2qvp87a/z/H61CemB2dvNfq54Kjx2SWONjeW7nG5sdTCN2ghY3TQ
+zNrkqdNrkxlGwSgYBRQDANQMTUk;
+
+What it is doing right now: It puts down both words and sets up variables to what they need to be. 
+What it needs to do next: check for alphabetical order, then proceed to outboxing.
+Outboxing needs to have a Check Vs. a Static Copy to know when it's done. 
+
+Bmp vs. WC and 2B vs. 2C, every time a letter is outboxed, obviously this will be a loop of some kind. When the loop is broken, the program just has to end. So probably shove a jump to an inbox with nothing in the inbox, or just jump out.
+
+so we need 3 conditions for the alphabet check.
+
+We'll take 2nd word letters and subtract the 1st from them. 
+
+If the result is ZERO, move on to the next letter (loop)
+If the result is POSITIVE or NEGATIVE, you can start to outbox one of the words. 
+ okay so example time
+ assume 2nd word is Do and 1st word is Nah
+ So the check would come up Negative... so print out the 2nd word. If it's positive... print out the first word.
+ boom. Got it.
+So it's a very short loop in most cases.
+
+We'll post the winning code here, minus comments.
+
+Alright so we were having problems with the words that were similar but different lengths. UN and UNFIT would cause problems. There's nothing for F to subtract from. 
+
+So someone said online that you need to put down the ZEROES as well. I'm not sure that'll always help, but it could do something. It could at least tell if the word you're checking out is at an end sooner. I don't know how that will help if the 2nd word is similar but shorter, because you can't do math from letters to numbers for some stupid reason. Like the game could swap it on me no matter what word I subtract from the other. If there's U N 0 and U N F I T 0, how do I make it so I know when the word ends? F minus Zero is going to create a problem. 
+
+ducking A, I know what I was doing wrong. I wasn't decrementing my total word lengths.
+
+duck this other guy's put down the 0 bullcrap.
+
+Alright... I was given another interesting example... THE SAME WORD, TWICE.
+
+So I have to figure out a way to know when the comparisons are done and to just print out ANY WORD. Probably the first.
+
+Oi. I wish I had copied the 49 line version I wrote earlier.
+
+So the word length decrementing should be like bmp- wc bmp- 2c and have "jumpN" on both.
+
+Alright so I got it, after playing around with my stuff from yesterday. It's long on both counts, but duck it. 56, 125.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COPYFROM 24
+    COPYTO   21
+    COPYFROM 23
+    COPYTO   22
+a:
+    INBOX   
+    JUMPZ    b
+    COPYTO   [22]
+    BUMPUP   22
+    JUMP     a
+b:
+    COPYFROM 22
+    COPYTO   20
+c:
+d:
+e:
+    INBOX   
+    JUMPZ    f
+    COPYTO   [21]
+    BUMPUP   21
+    JUMP     c
+f:
+    BUMPDN   20
+    BUMPDN   21
+    COPYFROM 21
+    COPYTO   19
+    COPYFROM 24
+    COPYTO   21
+    COPYFROM 23
+    COPYTO   22
+g:
+    COPYFROM [22]
+    SUB      [21]
+    JUMPN    h
+    JUMPZ    k
+    JUMP     l
+h:
+i:
+    COPYFROM 23
+    COPYTO   22
+j:
+    COPYFROM [22]
+    OUTBOX  
+    BUMPUP   22
+    COPYFROM 20
+    SUB      22
+    JUMPN    d
+    JUMP     j
+k:
+    COPYFROM 20
+    SUB      22
+    JUMPZ    i
+    BUMPUP   22
+    COPYFROM 21
+    SUB      19
+    JUMPZ    m
+    BUMPUP   21
+    JUMP     g
+l:
+m:
+    COPYFROM 24
+    COPYTO   21
+n:
+    COPYFROM [21]
+    OUTBOX  
+    BUMPUP   21
+    COPYFROM 19
+    SUB      21
+    JUMPN    e
+    JUMP     n
+
+
+the no comment version.
+
+Went back and copied and pasted my old solutions for prime factory and another one. Going to hit those up later for optimization purposes. Now I need to do a couple of the more easy ones... that'll open up the last problem. 
+
+I'm kind of upset I didn't copy and paste my answers on the last one but oh well. I can probably figure it out again.
+
+scavenger chain - got it perfect on the first try, both optimzed. 8/63:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    
+a:
+    INBOX   
+b:
+    COPYTO   22
+    COPYFROM [22]
+    OUTBOX  
+    BUMPUP   22
+    COPYFROM [22]
+    JUMPN    a
+    JUMP     b
+
+
+Re-Coordinator was pretty easy as well. 
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    COPYTO   0
+    COPYFROM 14
+    COPYTO   1
+b:
+    COPYFROM 0
+    SUB      15
+    JUMPN    c
+    COPYTO   0
+    BUMPUP   1
+    JUMP     b
+c:
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJxzZmBgWOca7LDOVWMdkMkgXfZYUzJLU/Vaqqbqs+SzSnuSziqdSdiisTh+k+ni+GOee5ICfWuyuILO
+5yhEns+RLl6afWFiUOb8uf/TIhaZRbUvBpnhU3B6dX9J++K6MqfZt2tjO1r6lHyWTXusCZL7syTT/c+S
+e875i7/Zhi04YaM864TNsmn3nB9MrY1um3U96/N86eJHCw2reBbHdvAs7pxWv1BrIfO8rUusJgotF5hQ
+OEdgQue0nzP6ak7Om5C/c8GKTLdFZgkgcyetTg+ZvWG6R/a2YId5e07YhOz/Zrt9/4rMj/sMq6z3xHZE
+79CZ4rEuYlHGqvbFd1acnXdnxbMZGasWTrDYsHBC4OboqT+2n17NMApGwQgEADSzfyg;
+
+DEFINE LABEL 0
+eJwTZGBguGd/z5nDMdA329EsIdtx4QQOx7Pz7tlvXQKUYmAJqfdjCQnZA2K/CvgUnh7yPiUzQWj55MSt
+S/YkPZuRlH7Mk2EUjIJRMGQBACMlGeE;
+
+DEFINE LABEL 1
+eJwTZ2Bg6Lbltwi0u+e81GGtv7U7a45I0L9JAbH8W54lWx86lv71GFAJw5oUJZ+7cbXRDeFXym8FifWq
+BPyZP91v65Jc39OrQfLT/SD8i755Kxk9Zhy57nbnDMMoGAWjYNADAEjuJ5s;
+
+Non-optimized, 15/82. I'm going to optimize it real quick I think.
+
+Screw it. Sorting Floor time. I want to know that I've still got this. I will be reviewing my old notes.
+
+Went back to Re-coord. Got it perfect, thanks to old notes. Here's the perfect version:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    COPYFROM 14
+    COPYTO   1
+    INBOX   
+b:
+    SUB      15
+    JUMPN    c
+    COPYTO   0
+    BUMPUP   1
+    COPYFROM 0
+    JUMP     b
+c:
+    ADD      15
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    JUMP     a
+
+
+SORTING FLOOR TIME yoES
+
+
+So from what I can tell, the last time I think I had an extra variable and goofed up by about 500 extra steps.
+
+So let us think about what we need to do on this one.
+
+We need to do the swapping out. So a TEMP address is needed. 
+
+We need a static counter of how many numbers there are.
+We need a copy of that to decrement or increment crap as we go through the loop.
+We probably want a zero to increment up to the static counter.
+We need at least one location variable, which can be adjusted somehow. 
+
+So the idea is to spit out the numbers, first, with a catch for just one number, to outbox that one and move on to the next string.
+Then we clash from the right-most, going left. We do a left-ward swap - or we don't. We grab the next number and clash that one leftward. Either it moves or it doesn't. We grab the next left one and so on until we hit like a negative address.
+
+Let's be reminded of what this looks like.
+
+42 83 99 6 17. Five sort was enough to solve it so let's do it up.
+
+We grab 17 and fight 6. 6 loses. 42 83 99 17 6.
+We grab 17 again and nothing changes.
+We grab 99 and vs. 83. 42 99 83 17 6.
+We grab 99 again and 42 loses. 99 42 83 17 6.
+Does the best always end up on the very left after one iteration?
+Try another series of numbers.
+
+55 42 13 81 7. Hmm. First battle, no change. Second battle, 55 42 81 13 7. third - 55 81 42 13 7. crap, this one practically sorts itself in one go.
+
+But yes, it would seem that after each iteration, we have "solved" one winner and don't need to go further left. 
+So we need:
+Static Outbox Address Counter (numbers, minus 1)
+Address for Clash Counter A (right number) and B (left number) when left = neg, leave the loop
+Winners or Left Counter - LeftNo minus this Counter = neg, leave the loop, yeah, will save time.
+When Static Out Minus Winners = 0, proceed to outbox in decremental order.
+Also TEMP needs to be a thing for the SWAP.
+
+Okay I have perfect number plunking and swapping works. Now the next parts...
+
+Bump up winners? No, not yet, haven't yet done a loop.
+Bump down RT, LT, LT checks minus Winners = neg;
+Loop takes you back to the swap if it's not.
+If/when it IS neg, you bump up Winners. Do a check for St.Obx vs. Winners to be zero. If not, you reset LT and RT and go back to the loop.
+If that part IS zero, you proceed to outboxing.
+
+The brilliant thing about my swap so far is that if it's negative, you just go to what would be next had you done the positive stuff. You just don't do anything; you skip, so the program still just looks like a straight line down.
+
+Whoops. Wait yeah. Sorry about that. Swap Loop part works. Great.
+
+I think I've got it, now I just need a 1 sort.
+Maybe I'll be cheeky and put a 1 constant down and do a 1-1=0 check on St. Obx.
+
+Figured out the 1sort - just checked if the St.Obx was 0 after it got bumped down one, and then proceeded to outbox instructions if so. Worked a treat.
+
+Final program - 41, 963. Not bad! A couple hundred steps faster than my old crap!
+
+Here goes that one:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  2
+a:
+    COPYFROM 24
+    COPYTO   20
+    COPYTO   23
+b:
+    INBOX   
+    JUMPZ    c
+    COPYTO   [20]
+    BUMPUP   20
+    JUMP     b
+c:
+    BUMPDN   20
+    COPYFROM 20
+    JUMPZ    j
+    COPYTO   21
+    COPYTO   22
+    BUMPDN   22
+    COMMENT  0
+d:
+e:
+    COPYFROM [21]
+    SUB      [22]
+    JUMPN    f
+    COPYFROM [21]
+    COPYTO   15
+    COPYFROM [22]
+    COPYTO   [21]
+    COPYFROM 15
+    COPYTO   [22]
+    COMMENT  1
+f:
+    BUMPDN   21
+    BUMPDN   22
+    SUB      23
+    JUMPN    g
+    JUMP     d
+g:
+    BUMPUP   23
+    SUB      20
+    JUMPZ    h
+    COPYFROM 20
+    COPYTO   21
+    COPYTO   22
+    BUMPDN   22
+    JUMP     e
+h:
+i:
+j:
+    COPYFROM [20]
+    OUTBOX  
+    BUMPDN   20
+    JUMPN    a
+    JUMP     i
+
+
+DEFINE COMMENT 0
+eJxjYBgFo2AUjGQAAAQEAAE;
+
+DEFINE COMMENT 1
+eJxjYBgFo2AUjGQAAAQEAAE;
+
+DEFINE COMMENT 2
+eJxzZGBguGP8wOyN4SxrVcNGx3iDlMROw6Q8e5OK0iSbilIJ+7eFP5xWZGp5HvPU8rR20/JckfnR07UP
+qI3hbUyg79sYjXUg9tRc3oOt+U17RWpf1e1u5IgHifnM9ouqnaoQyTDJL8qr/2ZsVveE/Kxu6eKo3mVl
+xyYtK7sw/X3Khekc8T9nKET+nCFdnDtdZBZIn+H2DU6OWzc4dW/KdF+9bmqo//L4av/lrn2iKy5MlF8b
+PXXpVp0pU7aXNk3Z3lezdOuysk3Ll5WB9Jkc5ogXOa4QKXtmauic2+khSXdqo6/dkkuTvzEhv/NifLXm
+3b4ayfvujTX3C+cE3Xu8lO1qy4b0kw83MYyCUTCCAQDo2XGI;
+
+DEFINE LABEL 15
+eJxTY2BgsLDmiLewnnYRyGSw0djgpKPV6PjUYrrHPucvXiCxhOibsQnRLRtA7L9RZgkO8RPy5ZOXNHum
+MLTVZEkX+xT4RZUWHkxOLWbN2VH6qs61fOEE00r+LSD1z/uOeQpMqPe7PoEj3nhG3krjGXZbQeJTeu45
+r+3/Zts7eZb1pcXZVmZLpntMm1Eb/WFySmLxhMlJDKNgFIwCugAA+4I6Bg;
+
+DEFINE LABEL 20
+eJxzZmBgmGSWHpJhGugbb8DjukyRx7VXrt7vg1xKYq7S9aw21aS8lbp7ai/pLWm+pNfdKaNzYeJLVZ0p
+CpI6U7LEFk4Aamdwi7gTMCGUK6g8aHXMdD+5tIfer+oeekdPXe7jNPuX35/5tsFbl8yKcljxPsNhRU5O
+xKIfufPn7s970b0/j7nSKPd61vuMqaFsCfecQWYxFc+yli6r98urOJjsV/Nshl+N1kKQuGp1qLFc0yn9
+s92n9Pf2bjJV6Kv3Y+8+HDardXXMv9aUxLft71PYu33Sn/cl5QlMiK9+3qfffrezuH9W679JppX/JoHM
+MJ6RlNc2y7Mkf3HntE3L2xeDxOTXvqrzX+7e+HOG02yGUTAKRiAAAEy5c0c;
+
+DEFINE LABEL 21
+eJyTZWBgeOj9zdbFZ/7ci752W4FchhI3QW1GD0Htj55t6knpbervMwS1a7L4LWqyAn3fZ0wNLU7liN+T
+dDBZJCgpzzdwX0F50LKyCaGv6jITRGY9S/4zH2RGXVmb+ory1TEHq4r7QfzzOQ/MDla1mARPeazJMApG
+wSgYNAAA/QAtAg;
+
+DEFINE LABEL 22
+eJwTZGBgOGrjxtpt+5x/qUOE2hQnHtd9znkrvV011qV4hK33KQhbD1TCwFKvbrS6WS4tsa1lA4ivlK/k
+49hlEbxzgUUwwygYBaNgyAIAYKMVeA;
+
+DEFINE LABEL 23
+eJwTYmBguGN8zPOOsUIkq+nkJHmLK+Vb7QrnLHX4N0nQbXKSiV9x/6uAXV0Fke9TgEoZuCtqo7krlpW5
+ll+YCOIb5XqWqLcvK2MYBaNgFAxJAABdWhqm;
+
+The Labels basically show what the variables are supposed to be, like RT, LT, and so on.
+
+duck yeah! I did it. Solved it again. It's amazing how much easier it seemed this time around.
+
+Went back to littlest number... and realized you only have to store one number, the winner. If you win, add the number back and write it down. If you lose, just grab the next number. I mean you store the loser! So you only store if it's negative.
+
+I was also preparing for something that I didn't have to do. I got rid of an extra jumpZ.
+
+Here's the perfect code, 13/75 with an X label on add0.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    COPYTO   0
+b:
+c:
+    INBOX   
+    JUMPZ    e
+    SUB      0
+    JUMPN    d
+    JUMP     b
+d:
+    ADD      0
+    COPYTO   0
+    JUMP     c
+e:
+    COPYFROM 0
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJyzZGBg2Kmtat+vdc+5X2v+XCCX4Zyjqv0Up2yrErdQ419+c/TMoubozYraZGoWlem+K2xq6K0gjni2
+BLMEg8SUxD1JPunNyaVNbAkvus2ioqeKBInM6vMsnAMyxyi3c5pRrsismLxnM17kF/efKJZs4GsRlgPJ
+hTfOsm5sUrWvnapqv22KRfDzPtacI22xHSC5g0ec5P8sKVDIX2yvk7/4gdmZVd9sI9Z8s529gcc1aWOg
+79GNB5Nnb2DNYV1lWMU8T7KhbM6rOuE5V8pBepWe/FZWejLdw+jR9SwQf9s9iJ9GwSgYBdgBAAUGWRE;
+
+DEFINE LABEL 0
+eJzjZmBgmBU13WNhnfWhu50fHiRPYv4KFGJo6av3+9d6J+B0/c1Yz5THSx96115nGAWjYBQMOwAA5FcU
+4Q;
+
+
+I went back to 3 sort and tried to optimize. I shaved off a few lines but added a lot more steps. It's also hardcoded as duck.
+I basically did it like a small final sort loop, just had to repeat something but couldn't find a way to do that without just using repeat code.
+
+I took out a line I didn't end up needing and saved 4 steps. So now my bests are 45/89 and 39/121. I'll have to make that better, later.
+
+Maybe 3 sort can be like littlest number
+
+Store value 1. Clash value 2 and immediately sort them yoes out.
+Clash value 3 vs the winner. Clash Value 3 vs. loser only if it has to.
+
+
+Alright now...
+
+we are going to try to optimize some stuff.
+
+Going for Countdown. Don't know how to bring this down to ten. I have it at 12/83 and it needs to be 10 and 82. Oi.
+
+I tried moving around some jumps and it was still 12/83.
+
+I'm going to scratch it and see what I can come up with. I am working on problems 19 and 20 for optimization. When I started this file, I was already on problem 23. So there's that! Ha.
+
+Alright so Countdown is also about the Count Up. 
+
+If you get a negative number... seems like you need to check vs. zero and negative to keep the loop going and then jump out only if it's positive.
+
+Outbox, bumps, and 3 jumps is 5 lines on its own. Inbox and plunk down are 2 lines. That leaves me 3 lines left for positive numbers.
+
+I think I have it. Jump neg to sort out negs after copy to. That leaves 2 lines left. Throw in a jump... with a bump... but also need another jump? Oi.
+
+I'm going to end up with 11+ lines. 
+
+I need to find a way to get bumps on their own situation without ducking up the count.
+
+Inbox
+HMM - CHECK VS. NEG?
+I'm trying to figure it out. Might have to pen and paper it. 
+
+REdid Vowel Incinerator and got the 13/323. It helps to use the Zero that's already there as a kind of terminator. Go up until what you grab is a zero. You increment the bumps that way and don't need to do any checking. It's just "did you grab a zero?" If you do, then it's time to grab the input, outbox, and start over.
+
+My previous was 17/315. Faster but had more lines. But not much faster.
+
+Redoing countdown. going to optimize what's left from the ground up. I like that the orange path was easy for me to do.
+
+Trying countdown. Got it down to 10 lines, at least, from 12. Steps went up. So now it's a matter of making it go fast. Halfway there!
+
+Okay I can get 12/83. I only need one step faster. I am not sure...
+
+Okay so inbox... obvious... then you have to copy or you won't be able later to bump... copy from seems to take more time than just bumping and dumping...
+
+Got it down to 12/77! 
+
+Had the brilliant idea of not using a jumpZ for the negative... just do one more outbox and let it go through...
+
+I put the negative sort up top. Jumped to beginning on top of that. The jump if positive isn't required because it'll hit 0, now it'll outbox, and then it'll just move on through back to inbox. duck yeah.
+
+Looks like this at 12/77
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    JUMP     d
+a:
+b:
+    OUTBOX  
+    BUMPUP   4
+    JUMPN    b
+    OUTBOX  
+c:
+d:
+    INBOX   
+    COPYTO   4
+    JUMPN    a
+e:
+    OUTBOX  
+    BUMPDN   4
+    JUMPN    c
+    JUMP     e
+
+
+So it goes "Jump down to inbox" - copies. If it's negative, come up top. Outbox. Bump - if that's negative, come back up to b to outbox again. When it hits zero, just outbox, and then come back down to inbox again.
+So if the copy to was positive, it outboxes, bumps, jumps out when it hits neg, and jumps back to outboxing (e) if it's not negative yet.
+
+No JumpZ required.
+
+COUNTDOWN IS OPTIMIZED. Finally. I had most of the blue done, but I'm that much closer.
+
+20 and 28 need full, 24 and 25 need half. The rest of blue is good.
+
+So I'll work on 20 next.
+
+Okay I am thinking for the multiplication I might only need 2 addresses.
+
+Plunk down 1. Plunk down 2. I see what I was doing now. I was keeping a decrement counter so I would know how many times I added. Not bad. 
+
+Worked on Cumulative Countdown or whatever - all I needed to do to make it faster was include a jump z for inputs, and turn jumpN into Jump Z. Saved a lot of steps. Went up one line of code but now that one code is fully optimized. 25 is done!
+
+Newest Multiplication one is down to 20/124. My fastest yet, but not fewest lines. Made sure to sort out the Zero Inputs first...
+
+okay, taking a break from that for a while. Going to walk and have some daggone tea.
+
+okay. back to multiplication. I think it's going to be a 2 code optimization solution.
+
+I am down to 17 lines and 155, and 20 and 124. I tried to reconfigure the 20 line one and still took 124 steps on average.
+
+I think I might copy the constant zero over before the start. It only needs to initialized once, after that, it can be written over. That might save the steps I'm looking for.
+
+Alright. Going for a rewrite here.
+
+inbox
+if zero do something (inbox, outbox, start over)
+inbox, if zero do something (outbox, start over)
+(already at 8 or 9 lines, yeesh)
+You need to store at least some original value. 
+
+Just noticed a thing about numbers. Ha. Perfect Squares are the sums of triangle numbers. 3 squared is 3triangle + 2triangle (3+2+1) + (2+1) to get 9. Every square is like that - the number being squared triangular, plus the number being squared minus 1, triangular. Oh, that's so rad.
+
+Anyway....
+
+we have to decide right now
+we got the zero inputs figured out...
+bleh. 22/122. A little faster. 
+
+I might have to go for code bloat on the speed, and go for ignoring zeroes and just do a general case, for the amount of lines.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    COPYTO   0
+    INBOX   
+    COPYTO   1
+    COPYFROM 9
+b:
+    COPYTO   2
+    BUMPDN   1
+    JUMPN    c
+    COPYFROM 0
+    ADD      2
+    JUMP     b
+c:
+    COPYFROM 2
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJwzZmBgcFZ0kq9VaHSUUshbCeQybLVrU9ewnaN31MbWUsOWI36rnXGuoVN8tZbnq7ryoFd1p0Liq90i
+9hWYRb1P+Rt1OOxvlK3l3yiI3pg81d07Si+1/K5cHVNRy+N6uv6U/pcGHQmQ3JIue52s7lBjgQlivQIT
+Zm0HiSVtPKXPuuqec/xSjnizJUAzl8RXi64obfqxvbSpZadkw4ud0sWKO/cV/NswIf/q+reFID0PDzww
+23zpgVnApWOeahe5gnyPuTfGHhHrZRgFo2AUkAwAkYFTmg;
+
+DEFINE LABEL 0
+eJwTYmBgiMkT1DbKtdfhzNlkOjnRLIE3krmyzttpNlCKwSl7lrVeg9bCs92KVx9Mff0LJFYQKV18ODq+
+2jNFv31qbnF/Re326SBxa3fJhmfJkg0Mo2AUjIIhAwAkdxwq;
+
+DEFINE LABEL 1
+eJwTYWBguBvHmsOW8LYwM2FJc23m//9AIYbKOGs3g8R7zo1N95yfNFkEhzdyxM+olC52i9Ba+LsyYpFI
+rca627V2W2/XbtgXV7XutFP2rZsbAlPvMoyCUTAKhhQAANV/I5k;
+
+DEFINE LABEL 2
+eJyTZWBgCPGy12kPCPT9G1VROqPyyKWMrv//gcIMIrXfbDuqgx3YEnSmhIfNXfUq4PtOkHjszOkezPOO
+HQ1b4PMYxFeeVe8nPIfHNW1esAPP4m+2Z1Z9s/VYt8HJY92dAPm1U0P1V38Kz1hVG82zWC6tf35VBsMo
+GAWjYNAAAF/UL7c;
+
+DEFINE LABEL 9
+eJwzYWBg8GNXiNTjtgiWUpju4awY6PtAYUWmgbhr3xLR6KmOok6zv4v/mc8gG7GowlhrIVA5wztbyYaH
+3hWltsGsOadCfNInhHLETwjlCkoPOeYpEsTjyuWrar/OVdXe0KnRMcnmTkCTxYpMeQvDKnkLkVmrLeeu
+OudofcjEr+GUSFDDKZB5b9v7ag5WLSurybpSXpzaVzM58VKLQ7xY79uYvJVvY2Ztr4zbsC8yifegZ8qx
+o9syvx7rqD52NKNedbdc0+nVfC0XJvK1mCXcru2Q8qvZycdAA1B1TjD55Qnr4PXHrvkzHij0WbXnmn/F
+9kcRIDmRFzvXgujnb+xz7T6YWdp9eK7b8F7L4Pmbk25+r+xzw56b1X1/xtAKUrP3yc61M55NXzPh5Z/1
+l1747BZ50b/3+7PcPZbPOHZaPmvaEvbcflPYc46dtPDDKBgFuAAAu/2M1g;
+
+that's 14/167 on mult. Okay. I'm going to optimize it for speed now.
+
+Adding in the appropriate Input JumpZs makes it 19/133.
+
+Not fast enough. My other one that I have now is 18/121. I could try to make that one go faster. It already has the JumpZs.
+
+18/121 looks like this (in case I lose it)
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+b:
+    INBOX   
+    JUMPZ    f
+    COPYTO   0
+    INBOX   
+    JUMPZ    e
+    COPYTO   1
+c:
+    COPYTO   2
+    BUMPDN   0
+    JUMPZ    d
+    COPYFROM 1
+    ADD      2
+    JUMP     c
+d:
+    COPYFROM 2
+e:
+    OUTBOX  
+    JUMP     b
+f:
+    OUTBOX  
+    INBOX   
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJyzZmBgYNYsUEjTfFUHZDJsjn0qszk2SrIzpkjYN3An30fPnXzW7udFS9w6pErcChQYPSLUVAKyrSaE
+rvWXDeeIlw3fVzAhdFlZrq9hlbU7CF/PSvHgiJfyvhPQHvDN1i3isSbIXLE4oeVsCWfnhTce8/ze81sZ
+JCY1VdVeauqeWhD75LxGR53532w3LW9TL1rvJN+9yUleYss8xaVb29Sjd/BbKO5sdFTcOTWUY9v7FIsN
+0sWsq/bUdi6TbIhfKtnwZwlz5Z8l0sWiK96nJG1MSXTc+rbw3DbJBpC5u05HSbqd5Qp6fGZJM8MoGAWj
+AAMAABV+Whk;
+
+DEFINE LABEL 0
+eJwTYmBgiMkT1DbKtdfhzNlkOjnRLIE3krmyzttpNlCKwSl7lrVeg9bCs92KVx9Mff0LJFYQKV18ODq+
+2jNFv31qbnF/Re326SBxa3fJhmfJkg0Mo2AUjIIhAwAkdxwq;
+
+DEFINE LABEL 1
+eJwTYWBguBvHmsOW8LYwM2FJc23m//9AIYbKOGs3g8R7zo1N95yfNFkEhzdyxM+olC52i9Ba+LsyYpFI
+rca627V2W2/XbtgXV7XutFP2rZsbAlPvMoyCUTAKhhQAANV/I5k;
+
+DEFINE LABEL 2
+eJyTZWBgCPGy12kPCPT9G1VROqPyyKWMrv//gcIMIrXfbDuqgx3YEnSmhIfNXfUq4PtOkHjszOkezPOO
+HQ1b4PMYxFeeVe8nPIfHNW1esAPP4m+2Z1Z9s/VYt8HJY92dAPm1U0P1V38Kz1hVG82zWC6tf35VBsMo
+GAWjYNAAAF/UL7c;
+
+moving the first input jumpZ to the top doesn't make it any faster; I've checked.
+
+ -- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+    JUMP     b
+a:
+    OUTBOX  
+    INBOX   
+b:
+c:
+    INBOX   
+    JUMPZ    a
+    COPYTO   0
+    INBOX   
+    JUMPZ    f
+    COPYTO   1
+d:
+    COPYTO   2
+    BUMPDN   0
+    JUMPZ    e
+    COPYFROM 1
+    ADD      2
+    JUMP     d
+e:
+    COPYFROM 2
+f:
+    OUTBOX  
+    JUMP     c
+
+
+DEFINE COMMENT 0
+eJyzZmBgYNYsUEjTfFUHZDJsjn0qszk2SrIzpkjYN3An30fPnXzW7udFS9w6pErcChQYPSLUVAKyrSaE
+rvWXDeeIlw3fVzAhdFlZrq9hlbU7CF/PSvHgiJfyvhPQHvDN1i3isSbIXLE4oeVsCWfnhTce8/ze81sZ
+JCY1VdVeauqeWhD75LxGR53532w3LW9TL1rvJN+9yUleYss8xaVb29Sjd/BbKO5sdFTcOTWUY9v7FIsN
+0sWsq/bUdi6TbIhfKtnwZwlz5Z8l0sWiK96nJG1MSXTc+rbw3DbJBpC5u05HSbqd5Qp6fGZJM8MoGAWj
+AAMAABV+Whk;
+
+DEFINE LABEL 0
+eJwTYmBgiMkT1DbKtdfhzNlkOjnRLIE3krmyzttpNlCKwSl7lrVeg9bCs92KVx9Mff0LJFYQKV18ODq+
+2jNFv31qbnF/Re326SBxa3fJhmfJkg0Mo2AUjIIhAwAkdxwq;
+
+DEFINE LABEL 1
+eJwTYWBguBvHmsOW8LYwM2FJc23m//9AIYbKOGs3g8R7zo1N95yfNFkEhzdyxM+olC52i9Ba+LsyYpFI
+rca627V2W2/XbtgXV7XutFP2rZsbAlPvMoyCUTAKhhQAANV/I5k;
+
+DEFINE LABEL 2
+eJyTZWBgCPGy12kPCPT9G1VROqPyyKWMrv//gcIMIrXfbDuqgx3YEnSmhIfNXfUq4PtOkHjszOkezPOO
+HQ1b4PMYxFeeVe8nPIfHNW1esAPP4m+2Z1Z9s/VYt8HJY92dAPm1U0P1V38Kz1hVG82zWC6tf35VBsMo
+GAWjYNAAAF/UL7c;
+
+I just have to make the loop one cycle faster and I think it'll be optimized for speed.
+
+Went to String Reverse and got it optimized on both ends with one program. 11/121. Took some finagling. Had to get rid of the "bump" and just use the 0 that was there, and carefully put in the bump up part in just the right location. It has to serve double duty - to reset the Zed and to actually be part of a loop.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    JUMP     c
+a:
+b:
+    BUMPUP   14
+c:
+    INBOX   
+    JUMPZ    d
+    COPYTO   [14]
+    JUMP     b
+d:
+e:
+    BUMPDN   14
+    JUMPN    a
+    COPYFROM [14]
+    OUTBOX  
+    JUMP     e
+
+You have to admit, 5 jumps in 11 lines looks wonky as heck.
+
+I got mod math optimized in one go as well - 12/57. Now that I know you can just do serial addition and subtraction in place...
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    COPYTO   0
+    INBOX   
+    COPYTO   1
+    COPYFROM 0
+b:
+    SUB      1
+    JUMPZ    d
+    JUMPN    c
+    JUMP     b
+c:
+    ADD      1
+d:
+    OUTBOX  
+    JUMP     a
+
+
+I can see where I did wrong on Sorting Floor. I think there's a variable I don't need. The W+. I ended up duping sometimes when the numbers were already pretty much sorted. Ended up going 2 or 3 more times for just no reason.
+
+well I can see why I used it, when I actually run the thing. I needed to see how many times I've pushed a winner left. But sometimes it's redundant. Hmm.
+
+I was kind of on to something with the whole fighting tournament idea. It's basically Merge Sort. I just didn't know how to make groups or pairs really well in the game.
+
+
+..newer day. Made a new profile again and started over. Made a funny optimization on an early problem. I got the same number of steps and lines but did things in a butt ugly way. 
+
+I'm going to paste both for comparison.
+
+The problem is the X40 Input deal.
+
+This is the ugly way:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    COPYTO   0
+    ADD      0
+    ADD      0
+    ADD      0
+    ADD      0
+    COPYTO   0
+    ADD      0
+    COPYTO   0
+    ADD      0
+    ADD      0
+    ADD      0
+    OUTBOX  
+    JUMP     a
+
+
+Look at those Adds.
+
+This is the way they "want" you to do it:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    COPYTO   0
+    ADD      0
+    COPYTO   0
+    ADD      0
+    COPYTO   0
+    ADD      0
+    COPYTO   1
+    ADD      1
+    COPYTO   0
+    ADD      0
+    ADD      1
+    OUTBOX  
+    JUMP     a
+
+Both give you the same result! Ha. The ugly way even saves an address.
+
+I might have fun trying to come up with "butt ugly" code from now on.
+
+So now we're going to duck with problem 41 again, see if I can't make it less wonky. It repeats itself a couple times before it gets going. I need it to stop doing that. STAHP.
+
+So okay I can see where I goofed up and extra loops happen. I just don't know what my thinking was last time... erm...
+
+i think my line of thinking was: set up a variable to tell us how many times we've done the crap. Then subtract it from the outbox number to figure out when it's time to stop.
+
+Let's try this sort of champions again...
+
+try a 5 sort for an example. 
+
+13 85 22 14 57
+
+Okay so my idea is 
+
+13 85 22 57 14
+13 85 57 22 14
+did I stop when I lost? nope.
+
+But I do think I might have found a way to go faster. MAYBE.
+
+Instead of swapping left every time... Use TMP differently. When you win, you just clash again and again... You'd still be ducking with TMP and bumping your targets, but you leave out a few steps each time. 
+
+Let's try it. Well no, new problems emerge. How do you know when you have reached the end, if you haven't plunked crap down yet...
+
+So this might require some new code.
+
+break out winning streak after clash when right target = 0
+basically the math is going to be like 
+copy from right target
+copy to temp 
+copy from temp
+bang it up
+if it's negative it's lost, no biggie
+hmmmmmmmm
+
+new target...
+
+alright, trying to add in a 3rd target for last place doesn't seem to work, just seems to shuffle crap around.
+
+you still need to swap places. you're swapping from last place to wherever the new crap is.
+
+so 22 14 99 83 41 5 61
+not bad but doesn't work with serial shifting, it would get ducked up
+next move would be to grab 83, doesn't do crap, grab 99, okay now 99 moves up and 22 overwrites 61... oi.
+
+Okay but what about not serial grab...just serial bang it out...
+
+22 14 99 83 41 5 61
+
+okay 22 14 99 83 61 5 41
+22 14 99 83 61 41 5
+5 loses
+then you have no basis to continue
+
+Okay it was a cool idea, it just doesn't work the way I thought it would.
+
+but okay let's say you did grab left and swap to last place...
+
+22 14 99 5 83 14 61 (not bad?)
+okay 22 14 99 5 83 61 14, 14 fails so you get the next one, 61 fails so you get the nex one, 83 beats 5... what dude
+
+really need to read the crap I just wrote
+
+Maybe I could do a whole new kind of sort.
+
+No. of victories?
+
+Pick RT copy to tmp
+clash, if you win bump the number of victories up
+copy from temp and try again
+the number of victories should tell you what place it is
+should be fine to plunk into the correct address from there
+
+ex: if you grab RT out of a 10 sort... bro you could go vs. OBx and swap that address and whatever used to be there, to last place.
+
+So if you have RT and 9 victories, and Victory Number - OBx gives you 0, then it goes into Address Zero.
+
+FUUUUUUUCK. Dude this could be way faster.
+
+At least on 5 and 10 sort.
+
+3 and 1, meh. duck them anyway.
+
+Alright so ... do we even need a "left target?" Well, yeah, just for the series of clashes and potentially to let us know when the clashing is over for any particular number. 
+
+Okay we'll also need to know how many times we've gone around and compare that to Outbox I guess. At most, only N-1 clash serieses need to happen.
+
+But the problem though, is that the numbers will need to clash V. everything. 
+
+You know, I don't have a problem with that.
+
+so you have a new Vs variable for Victories, which will be checked vs. Outbox
+you'll still have a TimesGone type of variable for how many times you've done this sort of thing, only it'll also be checked vs. outbox to be about 0. Going to be weird not doing it vs. left. 
+so we'll see
+I think our "one case" will have a jumpZ after we bump down the outbox number
+
+but honestly this isn't too bad. Times gone bleh
+
+okay
+
+so the procedure
+
+rt gets copied to temp
+Wait, why the RT?
+Why not just copy Outbox to Temp?
+....
+
+...
+
+maybe. Okay. Try it in our heads.
+
+We copy outbox address to temp.
+from temp, clash vs. left target.
+if win, bump up victory number.
+if lose, don't.
+either way bump down left target
+clash again from temp... basically if left = neg, stop the clashing
+so that's a loop
+copy from outbox
+sub Vs 
+copy to Vs
+copy from address in Vs, copy to address in Outbox
+copy from Temp, copy to address in Vs
+bump up times gone
+if times gone - outbox is 0, proceed to outboxing
+
+Okay worked out a problem with that... if the left most number is already the winner, it'll never finish. It'll just keep grabbing the last number, checking it vs. everything, deciding it b... but wait. If times gone is already good to go...
+
+ah duck it. We'll come back to it. I swear.
+
+alright so burn sort or whatever doesn't quite work. Works okay on a 3 sort. Doesn't work well on others.
+
+Even a 3 sort can fail.
+
+33 99 13
+so 13 fails and ends up back where it is
+times gone goes up
+13 fails an ends up back where it is...
+times gone goes up
+sorted ! ... fuuuuuudge (failure)
+
+Maybe clash as it comes?
+
+Alright let's try some numbers
+
+ 33 14 99 85 27 1 6
+
+Okay plunk down a number
+next number is 14 - what now? send it to 1?
+next number is 99... send 33 where now? to 2?
+all this does is make it so you have one high number on the left and the rest are scrambled.
+but at least you're partially sorted as you're putting them down.
+what if we did an iterative sort as we were putting them down?
+
+33 comes in. Boom.
+14 comes in and they clash. Don't swap.
+99 comes in and plunk. Clash vs. left most? Yeah, you can do that. You have to find a way to sort out the remains.
+
+So 99 comes in and replaces 33. 33 goes last. Now 33 has to come in and find itself again, doing my series of clashes.
+But, I mean, once done, everything's sorted.
+85 comes in. Goes into the new last place because it lost. Now it has to find itself.
+In fact, "finding itself" could just be whatever every number does as it comes in, if it doesn't immediately win on the champ.
+
+This might save some time. Champ sort.
+0 is the champ.
+You get a new input, you either are the champ or you fight the champ. 
+Champ might have a starting value of 0 just to be sure.
+If the champ loses, you write the input to temp. You write oldChamp to "last place" and Temp to Champ.
+Needs a special 1-case.
+Last place now has to sort itself out among the losers.
+Every time a new number comes in, it gets sorted on way or the other.
+
+duck their initial loop bullcrap. Anyway, sounds good to me.
+
+So the variables : Champ, 0, probably at 0
+Last place: bumped up number of inputs
+temp
+probably going to need lt and rt again for the serial swapping
+outbox will probably be important
+
+So that's something
+
+
+
+
+crap went haywire again. Trying to re-optimize my crap. I wish I had written down the 10 line solution to countdown. Oi.
+
+I made it a little faster with a 13/72. Accounted for some zeroes.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+    JUMP     e
+a:
+b:
+    OUTBOX  
+    BUMPUP   4
+    JUMPN    b
+c:
+d:
+    OUTBOX  
+e:
+    INBOX   
+    JUMPZ    c
+    COPYTO   4
+    JUMPN    a
+f:
+    OUTBOX  
+    BUMPDN   4
+    JUMPZ    d
+    JUMP     f
+
+
+DEFINE COMMENT 0
+eJyzYmBg4HC857zU4ZjnOcf0kO1ehXO4fE/uuOjLfQ4oxfA59FO4WZRFsHSZtVtdWaCvUr5PumSWZ8ma
+lD212iWv6rgrLrV0VC+cIFI7f25FrdDyjTUa635XPtwUWmq3tTV/1nbLtFnbQebY1dltPV3fssG8Vax3
+So9PutTUFpPYmU7yILmbc754Mc9T8unb98Xr4756P8Hd71Nmb3jR/XV15zSQ/Pb9k5NMDtdGvzrqF/X3
+fL2f2kWuoIBLCpEBl1Zkql1cVvb4TGyHyPHt07X3RSxK2es0O2XvhYna+4r7XQ4W9/86/G+S2sXvOxlG
+wSgYBVgBAPOGas0;
+
+
+I think the 10 line solution to Countdown made it so the negative and positive were all the same loop. O would be the end anyway.
+
+Shaved it down to 11 lines but the steps went way up. here's what it loooks like so far.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    COPYTO   9
+    OUTBOX  
+b:
+    COPYFROM 9
+    JUMPN    c
+    BUMPDN   9
+    JUMPN    a
+    JUMP     d
+c:
+    BUMPUP   9
+d:
+    OUTBOX  
+    JUMP     b
+
+
+DEFINE COMMENT 0
+eJwzZ2BguKTXpn5JL/0CkMnA5ftbWSVgcpJv4J/5voHc50BibAmW5w0S150+lh6xiKmYNWdG5XSP27UP
+zEByIrV3Aipqa6NP11eUPmni3wIS+9e6ryCxbUVmSx9X0NyJX7yCp2S6506f7qE8iysobMGysp0LGNr6
+5y+c4DO7cI7W5K1Leic7zXaepjPl5azifp7Frn2iK4r7PdZpLQSZ1b3pp8H0w1s0Ai5t0RC7bK+z+dIs
+64QL1m62J/yieM+lJAZcYs1hu7qn9szV2I4zV6Onil2eP1f2jNbC67v/zGcYBaNgFBAEAJ/DXw4;
+
+Finally nailed it from there. I was on to the right idea from 11 lines. Got it down to 10/115.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    COPYTO   9
+b:
+c:
+    OUTBOX  
+    COPYFROM 9
+    JUMPN    d
+    BUMPDN   9
+    JUMPN    a
+    JUMP     b
+d:
+    BUMPUP   9
+    JUMP     c
+
+
+DEFINE COMMENT 0
+eJzTYWBgOCZ7z5lB1mk2kMmQYRroy2pa3B9h/mf+asu5q2Zbt2yott+8UdDt4SYtz7D1y32ElqsEiPWq
+BOypjfVnruTylS4+5yiX9s9aLg2kvzKuZcO3xMI5x9LfFvoUAM0FAu6KY55xVT7pG2sgdnzv+WnAMKm7
+E8Tet4PHNXvbN9vZG1pMIta0mJxZZWspuoIrSHSFX5T82qqM1ev2FczeENsxe0Nxf8aqhRMYRsEoGAVU
+BQBD60TX;
+
+I'll come back for it. Here's Zero Terminated Sum:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    JUMPZ    d
+b:
+    COPYTO   0
+    INBOX   
+    JUMPZ    c
+    ADD      0
+    JUMP     b
+c:
+    COPYFROM 0
+d:
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJyzYmBgOGSQHqJq6Fmyyai7U9R4+3RR47D1QGGGX34bnHJ9v3jVed+M/ei5rOy4R3H/cY+WDdu9VHfH
++jftPRWSs60hvGXD36iIRZtjL0xcHG+cuzh+uodD/D3ngNgTNrOiHpilh8zRA5nVmn92HlPxi+64qmCH
+jTWn9EFiExtCjY9N4rfonZxt1Tt5rf+xSWYJ1ydIFyv0STaA5H/OCPT1mW3t9maZrWXR+lDj7G0/DX5s
+P2HTsnNqaMvO9ynntl0pl9ji3nhm1YWJf5ZET720eOGES4uXNKsuk2x4ulayIXubWK/Lwa1LFpw4uYNh
+FIyCUYAVAABaEmrK;
+
+Okay so my thinking on Fib... why didn't I take some notes?
+
+Maybe I did and it's in another file.
+
+
+fib sequence...
+
+you need something like the multiplication program.
+fib 1
+fib 2
+fib X
+
+you have to overwrite a value from one fib to another, I believe.
+
+Like hmm...
+
+Okay maybe do this.
+
+0 and 1.
+
+Add them up - you get 1. Plunk in 1, overwrite 1 to the zero place. 
+Chunk in the initial one.
+Next time 1 and 1... add them up, overwrite 2 next time. But tdfjdfsldfsljdflkjdaljdslkjdfjkldsljd still have to alternate values.
+
+You have to overwrite both slots somehow. 
+
+So you can do the switch temp bullcrap.
+
+I learned that one later on.
+
+So you have fib 1 fib 2 and temp.
+
+so you have 0 and 1. 
+
+Add them up and you have 1 - put 1 in temp. switch the 1 to the 0 and the temp to the 1 and now you have 1 1.
+Next time you have 1 and 1. Add them up - put 2 in temp, swap ones, put 2 in the other 1, and you have 2 1 or something.
+I think that's how it's going to be. The old swaperooni.
+
+Alright did and done that... ugly 22/156 solution, but it works.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    COPYTO   0
+    COPYFROM 9
+    COPYTO   8
+    COPYTO   7
+    BUMPUP   7
+    OUTBOX  
+b:
+    COPYFROM 8
+    ADD      7
+    SUB      0
+    JUMPN    c
+    JUMPZ    d
+    JUMP     a
+c:
+d:
+    ADD      0
+    OUTBOX  
+    COPYFROM 7
+    COPYTO   6
+    ADD      8
+    COPYTO   7
+    COPYFROM 6
+    COPYTO   8
+    JUMP     b
+
+
+DEFINE LABEL 6
+eJzTYWBg2G1+zHO3+dl5QCbDSt2bsTP1FSKfWihEgvjbvW7GbvdirpzuNzXUN/BT+IbAm7ELgn3SG8Jr
+o/9GpYcsjp+Qz5ZwpfxMgmEVSP2NQmu3+UUQdmjpKf0V5Xm6r6vn6GXUn7DJqK/3s6ur9+uotgi+UZge
+AlJTLH0wuVjaLCFZdnVMv9Zaf32z6R6zrTPdk2x4XAPteFw5HBsdP3rOsubynWUtErTJlGEUjIJRQFUA
+ACq3QCo;
+
+DEFINE LABEL 7
+eJzTZmBgeC5ZlfFc8lKLlczp1UAuw1kx1pzv4j7pB1QOJoP4RwR3dS0RLe6/Ll3cD+J32/bVvLPVWghi
+Zzs6yYPoVwEbnESCAn1tg5PyJoTqTAGJ6YaujlkVMTU0ITo95FlyesiaFIXIb4k3Y/9GTU5KiK7KYEsw
+zt2TJF3cnBxf3Zzs3rgniaFtcXxsR0N4bMfnUIY2kBl1ZcEOFyveFl6s2D6dYRSMglFAdQAAi34/Bw;
+
+DEFINE LABEL 8
+eJyzYGBgaLJ4Vddk4drHb9WyYavd1c9AIYanFn/me1jqTHno7d540F+yASR21app76mQDftkw0P2gPgB
+sZs3VsbN2r44XvEqiL8mRb8dRLfmr8h8kX9yR2kh9zkQn6m4cI50mdPsFeXbp6tWb5++sebZDJZ6rYUs
+9XkrT9drrMuoz9lWUft9Z1yV6u4dpff3g/S09DFX5k6/ntU//33KykXvU2Yu8Un3X76v4M6KXV13Vmyf
+3rksb+X8uSd3MEziPSgwwW6rwISWDXMnaqz7MFljXe70zRtXLjpy6dLiT5cZRsEoGAV4AQD+U2Yg;
+
+Here's a Cumulative Countdown with 11/98:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+    INBOX   
+    COPYTO   0
+    COPYTO   1
+b:
+    BUMPDN   1
+    JUMPN    c
+    ADD      0
+    COPYTO   0
+    JUMP     b
+c:
+    COPYFROM 0
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJwzZGBgkPJ+YCbl3egY68/QVh7EfQ4oxMCfuslUMyO2gzNHdXdOTsMpkFhexYwjr6tztuk1nJ03q9Ww
+Kqr3hA1I/M8Si+CyOVxBPrPTQ6bNeJ8ybYZ0sfKsZWUn51WU5i9+n2K25HBY/NK1/oeWti8Gqf97/k5A
+wTkln8+njnmaHD7myXXoTgDXoYPJl8/pt7Nd1Vp45qrQcrareStnnc9bKXtGaLnuqfbFLCfnz7113Gl2
++XHXvlVnl5VVXpZL87wZ6Ot5c7oHwygYBaOAbAAAbPBXvA;
+
+perfect 12/82:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    JUMPZ    d
+    COPYTO   0
+    COPYTO   1
+b:
+    BUMPDN   1
+    JUMPZ    c
+    ADD      0
+    COPYTO   0
+    JUMP     b
+c:
+    COPYFROM 0
+d:
+    OUTBOX  
+    JUMP     a
+
+Small Divide, perfect 15/76:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    COPYFROM 9
+    COPYTO   8
+    INBOX   
+    COPYTO   0
+    INBOX   
+    COPYTO   1
+b:
+    COPYFROM 0
+    SUB      1
+    JUMPN    c
+    COPYTO   0
+    BUMPUP   8
+    JUMP     b
+c:
+    COPYFROM 8
+    OUTBOX  
+    JUMP     a
+
+
+Storage and String Storage are easy to perfect. Here's String Storage:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    INBOX   
+    COPYTO   24
+b:
+    COPYFROM [24]
+    JUMPZ    a
+    OUTBOX  
+    BUMPUP   24
+    JUMP     b
+
+
+Doing Three Sort, again, probably the third or so ish time doing this particular one. I'm surprised I don't have any of my old solutions on here. 
+
+So my thinking on 3 sort is to clash every time. Have the TMP variable ready to go. 
+
+So it's like plunk A.
+A v B. restore B and do something. Either put B in the loser slot (1) or put B in tmp, put A in 1, and put Tmp in 0. 
+Then input and clash again. Then Clash again if it loses.
+
+Here's my Ad-Hoc 45/95 solution(not optimized either way) for Three Sort:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+b:
+    INBOX   
+    COPYTO   0
+    INBOX   
+    SUB      0
+    JUMPN    c
+    ADD      0
+    COPYTO   9
+    COPYFROM 0
+    COPYTO   1
+    COPYFROM 9
+    COPYTO   0
+    JUMP     d
+c:
+    ADD      0
+    COPYTO   1
+d:
+    INBOX   
+    SUB      0
+    JUMPN    e
+    ADD      0
+    COPYTO   2
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    JUMP     b
+e:
+    ADD      0
+    SUB      1
+    JUMPN    g
+    ADD      1
+    COPYTO   9
+    COPYFROM 1
+    COPYTO   2
+    COPYFROM 9
+    COPYTO   1
+    COPYFROM 2
+    OUTBOX  
+f:
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    JUMP     a
+g:
+    ADD      1
+    OUTBOX  
+    JUMP     f
+
+
+Inventory Report seems easy but maybe tough to optimize.
+
+use the Zero that's already there as your terminator.
+
+Here's 16/407 (lines optimized) for that:
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    COPYFROM 14
+    COPYTO   15
+    COPYTO   17
+    INBOX   
+    COPYTO   16
+b:
+    COPYFROM [15]
+    JUMPZ    e
+    SUB      16
+    JUMPZ    d
+c:
+    BUMPUP   15
+    JUMP     b
+d:
+    BUMPUP   17
+    JUMP     c
+e:
+    COPYFROM 17
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE LABEL 15
+eJyTZWBgMMq1tTTKDVsPZDK8jako/ZGblAdiH5ukan9sEleQwIR/k0D80/UVpbVTPUtA7PlFE/JLC/cV
+fCqZkH+7tioDJNY7+Ur5zTlXylcuqigF8bUmM7TNnagzZe7EiEUg/tyJeSutJv5cwzAKRsEoGDQAAKBw
+Kxw;
+
+DEFINE LABEL 16
+eJyTY2BgkLD/4lXn7dq3KiLr8LdEn8dJ6V4fJLOSXlkXhexxLXftAyph2N0YX93YxNDW2JR+4Wx3bMf1
+Ce9TGCaZJWhNPpjcuaz2OkjNrNatS3Knty+uWDF/LogfseZtYdF6nSlHN844Erg5/cKU7bduth+9dfPz
+KcWrDKNgFIyCQQEAh1Q4gQ;
+
+DEFINE LABEL 17
+eJwzZmBg6DRU8lE1DNmjajhPsclirf8Up0stXL4PNy0IDjypG9pwyi1ixhG1mJYNbAkis46lmyUAtTDI
+Nb0tvF27r0C1Wrp4R+mruvUFFyYa5W5dwpnDv4Uz5+uxqbmW59cXKF7dUcpxW67J/M6WjjU39vbeOePV
+v2Hf2v6fa6J6XfsCO/pq4qrMEt5nKPmAzFTcqeSjuHO6x5lV0z0OLVXymbnkTsClxRzxlxZPyH+zjLlS
+YsuL7ntbXPuWbhWZtXTrzzXvNtltjV+asw2kt+FM4RyGUTAKRgHJAAB1Gl5l;
+
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  0
+a:
+b:
+    COPYFROM 5
+    COPYTO   7
+    INBOX   
+    COPYTO   6
+c:
+    COPYFROM [7]
+    JUMPZ    d
+    SUB      6
+    JUMPZ    a
+    BUMPUP   7
+    JUMP     c
+d:
+    COPYFROM 6
+    OUTBOX  
+    JUMP     b
+
+
+DEFINE COMMENT 0
+eJwLZmBguGMc6LvJ6G3hJiP+LUAuQ5FVekiSTb3fOcdM91MhJ2x0QwN9bYMVIn/5yaUtCF6RuSvMs+Rx
++L9J4WEis7Z7/Zn/xlBrIUjf36iHmzpjWja8z4jtmF+Ukni7Nk8XJF5XNjXUq39qqNkSi2CzJZ/CeRbf
+jA1b8D5l2bQr5dumMFcaz7hSbjOXubJ/vnvjykV/5vMs/r7TbRHvwZtzZhwxnmF9SGvyrO0gc/RXvy0s
+Wu+T3rKzNrpkd2308b1mCVIHKkqlDui39+1bOGHdrvlz3216vNRjndDyjFWPl7Kumj939xqRWYGbRWal
+7NVaWH7cbqvZeeUTILMSLkwNPXzhTsDbi3cCFl9R8gm6p+Qjeb/eT/L+4bD3dw8mH7vjk37szoR8zbsV
+pTX33RudHlyYqHk3eqr8jeipDleK+0FmrHgzR4/77YpMEFv6dfRUhlEwCoYgAADxiZqQ;
+
+DEFINE LABEL 6
+eJyTZWBguGPsk37URmTWOcfNG63drQ899OY9GOv/cNOC4MI5vJHx1bOikvKAyhgs04xzi1M7p+1J4j3Y
+nOywgjNnRWZOTkqiUS5H/KeS2I6LFe2LQeoks/5Nas2/MBHEVm+v9+tqd29c0rV5497epr1r+5v2MoyC
+UTAKBg0AABpLL+c;
+
+DEFINE LABEL 7
+eJwTYGBg2G1unPvPmuM2kMkganx69RSn06tB7FlRCpFicZ3T7sYduQTi2wZ3d34OFesViyvuX5NS3D8n
+bVcXwygYBaNgSAMAC7kW9w;
+
+-- fully optimized Vowel Incinerator, above. 13/323 first time this time, out.
+
+Duplicate Removal
+
+22/90, not at all optimized but works no problem.
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COPYFROM 14
+    COPYTO   10
+    INBOX   
+    COPYTO   0
+    OUTBOX  
+a:
+b:
+    COPYFROM 14
+    COPYTO   11
+    INBOX   
+    COPYTO   12
+c:
+    COPYFROM 12
+    SUB      [11]
+    JUMPZ    a
+    BUMPUP   11
+    COPYFROM 10
+    SUB      11
+    JUMPN    d
+    JUMP     c
+d:
+    COPYFROM 12
+    COPYTO   [11]
+    OUTBOX  
+    BUMPUP   10
+    JUMP     b
+
+
+
+recoord was perfected as 14/76 first time this time out. 
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+a:
+    COPYFROM 14
+    COPYTO   12
+    INBOX   
+b:
+    SUB      15
+    JUMPN    c
+    COPYTO   13
+    BUMPUP   12
+    COPYFROM 13
+    JUMP     b
+c:
+    ADD      15
+    OUTBOX  
+    COPYFROM 12
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE LABEL 12
+eJwTZGBgyHbMdM92TEl0dHDtc3T4vhMoxJCvt6urxC22A8Ruzc90b80/vRrEjkza1dWcrN/On8rQZl10
+qSWxTbKBYRSMglEwZAEAY7sWCg;
+
+DEFINE LABEL 13
+eJwTZmBgsA2eGmobbJZwKuRK+eHorMNAIYaGcJ/0hnC/qM6YL17XUq3dktKVfJLSV2TuSZIuPhy9rCwh
+Or76cPSurs2xOlPOJJydtyZFaDnDKBgFo2DIAQAbzx9u;
+
+Like I said last time, the remainder is the first coordinate, the counter is the second. You only need 2 variables.
+
+I'll do up Prime Factory and then find a new way to do Sorting Floor, later. I'm going to use my best old code to bounce off.
+
+Found my old Prime Factory b.s. and it takes a lot of steps. I might have to do the serial subtraction method of checking things.
+
+I can come up with a more clear set of instructions, it's just my head isn't in it right now.
+
+I think I'm going to want to work on my real life algos.
+
+
+Alright going back to 3 sort, to optimize, I think I figured out how to make it go faster.
+
+You don't swap anything. You just write long butt code and treat every case as its own special thing. 
+B wins? Chunk it into 1. B Loses? Chunk it into 1. Have separate conditions for everything.
+
+Basic Hard-coded 3-sort:
+
+63 lines, 83 steps (need 78 steps or fewer for speed)
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  11
+a:
+b:
+c:
+d:
+e:
+f:
+    INBOX   
+    COPYTO   0
+    INBOX   
+    COPYTO   1
+    INBOX   
+    COPYTO   2
+    COPYFROM 0
+    SUB      1
+    COMMENT  0
+    JUMPN    i
+    COMMENT  1
+    COPYFROM 2
+    SUB      0
+    JUMPN    g
+    COMMENT  3
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    JUMP     f
+g:
+    COMMENT  4
+    COPYFROM 2
+    SUB      1
+    JUMPN    h
+    COMMENT  5
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    JUMP     e
+h:
+    COMMENT  6
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    JUMP     d
+i:
+    COMMENT  2
+    COPYFROM 2
+    SUB      1
+    JUMPN    j
+    COMMENT  7
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    JUMP     c
+j:
+    COMMENT  8
+    COPYFROM 2
+    SUB      0
+    JUMPN    k
+    COMMENT  9
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    JUMP     b
+k:
+    COMMENT  10
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    JUMP     a
+
+
+DEFINE COMMENT 0
+eJwzYmBg6LZ9rPnOdpZ1kdXU0DvG0sWxKnNXrZVqOAWUYngHlJOwz9M959joyBKise5wdPUTkPgfff12
+CftLLbm+l1pA/G2ZzJWt+f8maZdoLYyr0pmi1/CqbnXzikyQXP3CpzL1C8PWg9jM834rf54vLDdzSYfU
+vw1Rkkc3PpU5ujFP9+r6Tab6q0/Y/FnS6Jg275jnzgWBvv7LuYKSNqaHSGw5HHZuG0d89I6kvOgdzJVT
+tks2BG7u7ty95t8knsWFc6wmbl3CMApGwSggCwAA4SFVBg;
+
+DEFINE COMMENT 1
+eJzTZWBgkPIOdsh2ZK78Z621EMhlCPHicX3onememWC3FcR/ajF/rqix3dY/+sonQHxHB4a2hnD9dhA7
+J+eb7Yv8tf6hpatjGpuulHe1SzZs6ZBsUG+PnqpavXmjdknIHpA64TlyacJzvu8EsZVnHUwOW5CSOGl1
+SqL82vcp8muT8iLWLCvLWBVfzTxvV1f/fLHepI2ufe82/ZsUuHn79Heb2hebLeHfYjN31vYPk2dtZxgF
+o2AUUA0AAMa0R94;
+
+DEFINE COMMENT 2
+eJwzYmBgYEuwCK6Mq40OiHVv7Ixp2gsUYpgV9T6lM8YsYU+SQqRmxtRQpuL0kNDSm7GhpfsKmIqvlOfk
+uDduyyxtci1f0qxazdB2u/ZFN0v99uks9fPnitQ6rLhY0bJhf57dVrG4nG0g85Z0fQqf0qMQ2dJ3M9Zs
+iXTxnyUVpWZLSptkFu7qWtuftxKkhnHvp/CUvTdj5+25nqW4U7Lh3pZ/k1avg8iF7A/0rTvAFfTqaF/N
+hFM/13w+NeMISNxxq377rPOxHQyjYBSMArIAAANfV3Q;
+
+DEFINE COMMENT 3
+eJyzYWBgkMwSluONFJa76Kup+s72m62Fdaa7vMXN2Elmr+ommV2Y2GQRsUjCvmXDdq+QPbbBvAfnpM04
+AtTGoFrd6KhazeOqXdJXU1ro2meUy7+FMyfrMEiurkxT1bRSUPttu2FV8QSNdSAxn4JXdU+aJBtAbKmp
+xzylpnIFTZtxqaVt1vy5N+dA1DhPu+fsPC3YYdoMW8udC9SNItbY6xzdaK/TvemnQfemB2ZJG7/ZPl37
+xct+5afwmUs44i8tTkm8tFguLWmjT/q6Xca5x/dKF9cdkGxwObh9+sd97YsVd4at796Us23S6u87eRar
+7mYYBaNgFKAAAFRyY9s;
+
+DEFINE COMMENT 4
+eJxzZWBgYNbc4PRTmSvIj33+XCCX4YBKqPFJzW+2K3WVfM6YLiuLML/UAhLXkmPN+SCXlGesvK/gs9a+
+ApDYbvMWEwvrFpNbQbXRt4I44nN9jXOTbF50g+T259X7Tc1NSXTK9iypydrVBRJ7ljzdgz91gxNT8Szr
+0/WzrMMbv9k2Nt1zbmyq9wtvXB3zu/J61vmc+GrJrL6anJwr5TtKr5SvKDes+l0p2XCwSr/9YNWzGSvK
+tRb6FOStnJN2evWaFIcVIHNzp7/o5pz+bMaHye2Ll3TxbzFvzdkGErfe88Bs6+YHZv822FquXvfN1n/5
+1NBDS33S45dKFx9a6jRbdIXQ8kmrf665ur5lQ/WWlg0c2zTWMYyCUTCCAABYunZu;
+
+DEFINE COMMENT 5
+eJwzZGBgcPGpjXZ06Jx21ObnGiCX4aOnRfByH4XI9BDDKrMo175viSF7QOLbvbo7/0Z1d0YmLWkG8eWa
+Mt39aqzd8iq+eL3IZ835kcvQZpR7dl5MXtj60kLV3dJlvAdFamccudIy4whIff3CRsedC5R8whakJIYt
+ODsPJJa/2F6HdVWEWvemLRrntp3S/7H9gdmP7Ruczm1T8jm09H2KxQa5tOotSXkc266Un9sW2/Fju1jv
+j+06Uzi2Fc4J3Byx6MwqoeUMo2AUjAKyAQC4mlRh;
+
+DEFINE COMMENT 6
+eJwzZWBgKIjM0y2IDDVmCUlJXO6zcEKKh9ByoDDD4eg29cq4nwZBmUl5S7OXNC/Ndu0DibOEHA7jjZwa
+eqL4cBiIr1odaryx5lO4XkNxP4j/qWSO3oxKTdXbtfMUxTuF5ab0aKp69c/RW9u/yVShL9hBvf2Ll2r1
+p/BpMz6FH5jpF/VyllmC8ByfdOE5kg3Ks3Z1XZ9QOEe88+y8wI7t00HmTT/cpl53QFN19boItUuLN5me
+nGftVjbnToDyrMlJsTNf1ZXNKe7nWVw4Z/earUsUd+atZBgFo2AUEA0AWyxWhA;
+
+DEFINE COMMENT 7
+eJwzYWBgYEvgt0iI3mSq5bnJdIqTreVs60DfIqtP4U0WE/LlLRjamiycZl+1mrvK0On7zj7PDfvSQ+7v
+B2pj6C9pdMyrSMoTqe2cJtdkeR4ktqJ8g1NUr6r93t57zlG9gb6rm1MSO6qNc4snJOUJz1lW9mihe+Oj
+hSKzdOYLLeec/nDTlB7V3SK19/dvrLHbCtLPvz7UuGh99NTV62Ztl1/76XLEmjU3QOJbN2dbbd2sal+y
+e1+B7JmcbZlX/a+BxLO3dU5bt6tzmufN9sUxj7cuYRgFo2AUkAQAC1NZFQ;
+
+DEFINE COMMENT 8
+eJyzZ2BgOKkZanxSc2roI53HS4Fchg1qtpbMmi0mnYYtJotM+C0yTL/ZZpgG+r4xXB0Tb8ARr2FrlrDV
+bnLSPfsr5ffsS5u6bS9M3GQ0d9VnLf4tJzVbNoDMYPSw1wnxOqX/OfSY5+bYT+H8qZOT1qT4pGcmeJZ8
+Do3t0PIsnANSp9D306Cq86fB6uZvtl8avnidrleIzKjvq5Fr2tWV2BY99XtP4ZzaqX/mP1qotfDS4rPz
+zJY4zQbp61x2qaVz2fbph5Y6rPizpGVD/cIZR0Di8/Y8MGPc2915fbfqbhB/3a61/iaHWXN4z22fPud2
+6l2Q2PG9z2a4nX02g2EUjIJRwAAAWrpuYA;
+
+DEFINE COMMENT 9
+eJwzZmBgsDep98sw9Uk/Y+reeMb02FGgEMMd4+tZZ0zNEt7ZfgqP9f8U3h6gECkSNDmpPIg1RySIuTLW
+f0nzcY/ifpGghRN0Q3WmfA7dPj087PHS9BCNdX2es7YLup3cMdv65I4iK7utIPO+NHDE29VxxP+unJzU
+X3I9a33BsrKpuaVNS7MvTLyf9We+U/bPNfOL7u83rcw6rN4+4whIz9O1Sj6iK8wSVi66Un5s0sNNILFN
+y+85n1mVHtKyc/PG67stz4PEZBbu6sretquLYRSMglFAMgAAa99aeQ;
+
+DEFINE COMMENT 10
+eJwzZmBgOKAyy9pHjcd1pe6Lbn+juav0zdadBgozMGtau+lobXBy0w12OGpja/nQm99iuY+q/XavY55P
+LYxzrd2T8mL93xa2B/TVtAfs6vrlpzNlu5fWwn3Oc1ettrTbmqZ5fz/InP158xR/5H6zZUvonDYrin8L
+SKw1f46eT8Em0y8NOlOutLRsAImtSUlJXJr9PqWuTC4NxP+34bHmpNVbNNwWPdYsmzNHr3Zqo+P1CTdj
+1/brTNGa3LJh2bRZ24XnhOwxW3J/f/cmiF2jYBSMAtIAAKXoVVE;
+
+DEFINE COMMENT 11
+eJwLYGBgmK8RofZTuU09WfaEzXPJw2F7JZLy9kq4N7ZIFvcXS4vM2ib/Z/5L1fbFj3TaF/PonZ23Ure7
+U0ZnSXOsypLmXjn99rkyu7qAxjDIW/C4atjOsp7n3mJy0VfdyMSPxzXEyyI42vlgsobthPyrVsvKwsM8
+SxrCl5U9DndvPBXSOW27l9bCErf2xSD9zcmPl3qmOKw4lv5v0o3Cer+6Mk1VkPjNOUo+S7q+eAV2BPqq
+t1sEq7ffjP0weV/BhemGVT9nuDfGzpw/13jG1iVak1s2fO/5vvNfa8ieKy0/1/xrfTajq921b2/vsrKX
+s6aG6syf7gEyL2OVtRv/+kbH7G3fbH8dPmFz8Eiww8Ejme4mhy2CW3Zez9LYtKxs6VbDquN7+2ouHnJv
+/HVYvz32SHF/7JGz80wO560M2f9w07lt33dKbPm+k2EUjIIhDgCqdpTu;
+
+DEFINE LABEL 0
+eJwTZGBgOBytqTohdGroqwDpYkaPP/MVXU6vBgoz6Ia2qe8KE9ROiN7gpBaj5OMQn5L4LVGsNzLJYQVI
+3jZ4X0Fx6r4ChlEwCkbBkAUADW8WsQ;
+
+DEFINE LABEL 1
+eJwTZ2Bg0LDNdNewZc15Z/tv0jvb1LtAIQZ+q2CHee6q9rbBjY5/o754JUTfjH0czpozIXRfwXS/itJz
+jt2dsuGxHQWRu7o6Y87O2xw7d9XmWLutj8OtD7W4fD1m6DTjCMMoGAWjYNADAIDdJ3Q;
+
+DEFINE LABEL 2
+eJzjY2Bg6KjOdI+r4nENLeVx3Z9nEXw/yyzhWPrbwuJUhrY1KadXb8sM2WNddH+/X431oW1TrA85T7u/
+n2EUjIJRMCwAAHiGGQs;
+
+Comments and labels are basically the A, B, C and where each goes in the math. The idea was to just plunk crap down and do the math later.
+
+I had a similar approach of clashing vs. before sorting, and it came out to 70 lines and 82 steps. One step faster! 
+
+I might be able to fudge the longer version to make it a liiiitle faster, to just edge out that little that I need.
+
+I made some cheater code! For three sort, that is. I noticed the first two patterns are ALWAYS ABC, CBA. So I just hard coded those to go into the inbox and then ran my 70 line code after that. It's 86 lines, 57 steps! Ha!
+
+-- HUMAN RESOURCE MACHINE PROGRAM --
+
+    COMMENT  10
+    COMMENT  9
+    INBOX   
+    COPYTO   0
+    INBOX   
+    COPYTO   1
+    INBOX   
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    INBOX   
+    OUTBOX  
+    INBOX   
+    OUTBOX  
+    INBOX   
+    OUTBOX  
+a:
+b:
+c:
+d:
+e:
+f:
+    INBOX   
+    COPYTO   0
+    COMMENT  0
+    INBOX   
+    SUB      0
+    JUMPN    i
+    COMMENT  1
+    ADD      0
+    COPYTO   1
+    INBOX   
+    SUB      1
+    JUMPN    g
+    COMMENT  3
+    ADD      1
+    COPYTO   2
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    JUMP     e
+g:
+    ADD      1
+    COPYTO   2
+    SUB      0
+    JUMPN    h
+    COMMENT  4
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    JUMP     d
+h:
+    COMMENT  5
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    JUMP     c
+i:
+    COMMENT  2
+    ADD      0
+    COPYTO   1
+    INBOX   
+    SUB      0
+    JUMPN    j
+    COMMENT  6
+    ADD      0
+    COPYTO   2
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    JUMP     b
+j:
+    ADD      0
+    COPYTO   2
+    COPYFROM 2
+    SUB      1
+    JUMPN    k
+    COMMENT  7
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    JUMP     a
+k:
+    COMMENT  8
+    COPYFROM 2
+    OUTBOX  
+    COPYFROM 1
+    OUTBOX  
+    COPYFROM 0
+    OUTBOX  
+    JUMP     f
+
+
+DEFINE COMMENT 0
+eJzjY2Bg+NKwwSmjPtP9U0lsh2SW9SGgEINIbbbVl4ba6Ludz2Z873m4KaqX9yBIPLQ0tmNJl347wygY
+BaNgWAAAQW0Wmw;
+
+DEFINE COMMENT 1
+eJyzYGBgUFa113mp+rbwpKbQch692usbDP7/BwozXFCaZb1S95T+bGt7nV9+9jqnQvgtPoeq2n8OtXZb
+EJwe4uLDEa9hOyFfw1a62MVnWZlvYHz15cgX3QGx0VPvxhXOWRy/dUlnTMieOm/ucz+cpl1Mspl28apV
+wymQ2QaJ9jprUux1OHMemK0o/+LV1c4Rn9gml1bYUpWxonxfQU1WRSlInWSW1kKl/IhFppVaC3Ond04D
+ifXPN0von7+k+cDMWdtBfOZ5dwIeLbwZK782YpHGJoj5P2d0TlPcCVE/CkbBKMANADNfWfI;
+
+DEFINE COMMENT 2
+eJzTZWBgmGTWYjLJLNB3kcmE/Hw9hxWftUL2AIUZkmwYuB6HO81eFdG+GMQ301+RGR62IhPEvhunqfo/
+7ZutUa6ST3/J1ND+kpuxJ4oPJgdlepaA5Tuzrb73nJ0HYgd2TPfY0sHjuqQr2EGhb5b1h8m2lqIrbC3v
+rOBxvbOCKyh+KUd82jy5tORJxrlzJ07Ir506IT9tHnNl/UL3RrMlYr1mS57NcFuktdBn9tYlnNO3LmEY
+BaNgFFANAAB25EY3;
+
+DEFINE COMMENT 3
+eJyzZGBguBypqboq4qzSqZCzSr/8BLVTPLKtljp8Cn9nu6/gqI1++1Ebp9ndtu2LORztttZ5zzhSGRd4
+EqiNYVtmoG9N1lr/H7nx1TtK150GiTllH/PkzLnnzFQ8y9q00tayqtPW0rHrhE1VZ6Dvv9apoX41cmkL
+665nuTez5rxtn5Cf1V1RatDDXGnQ82+SeGfhnMS2s/NY6rUWrijXWggyT2f+HL3P80ONHy20CH60sLuz
+f/7PNWnzWjaA5Prn81v4L/8U3r3Jte/ctryV3ru+7/Te1bQXJHdyXmzHzgUMbS07GdoYRsEoGAU4AQAm
+WGIf;
+
+DEFINE COMMENT 4
+eJyzZGBgqDBOD7ljvCIzwzS2w8OSfwtQiCFM+07AIx0lnz/6me5NFsEOsf6q9qdCGh3Dw6zdPoceDrvo
+ezB5uc/BZCnvqowpTm8LlzoYVv3yY658FVDa9CrgwsTpfp3T+jwL5zg6RCwCmedabmuplD/Lek6atVtB
+5M3YhvCDyQuCGdoWBIv17grbPl0srnAOSJ1Xf6a7V3+gr0EPa45dXd5Ku7r2xYltfTUtfV+8iifU+wVP
+mZzEPO/06rR5OdtA6vfnLZwwq3XhBBD7cfj26Z0xhXNyctoXg/gZ9QxtrKsY2hhGwSgYBTgBAH93WYw;
+
+DEFINE COMMENT 5
+eJwzYmBgOKl5J6BehyP+q1nONiCXYb6GQuRnrfSQQLsvXsc9Mt3Lg0D4cJhKwMHkh977Clpc+moCYvtq
+xOJKm8Tiujvfxiyc0BAuMuugv9bCee6Pl2Y7Ci0HmfO7co7e70pV+4sVflHzi3Z1vcgXmQUSnwEUF6l9
+YHa6vtHRvLUqY0rP1iUQ9UuaD8wsbQKxV6/b4CS6YoPTpcWZ7jILA32VZ3HES031LEmepN9uNVFrodVE
+oeXJk06v5pyusc5sicY6hlEwCkYBWQAAnAxRGg;
+
+DEFINE COMMENT 6
+eJwzZ2Bg4E9VtWdL4LdIiN5k+jl0k6lKAL/Fdq9M9xI3swRFl1d10c5Cy9e5tmx46J2zzSxq1nagFoaF
+dT8NKmqDHfhTG06tSfl0GSR2u/aU/u3aTabq7bu6rCbeOTN34pFLVhPX3ADJrS8QmdVRLTKLYVLnNBA/
+YxVXUMSag8kWG9oXd28yvwMS05nvF3Vo6Z0A/dVKPj+287ge33vPuW/fMc+P+6aGluwGumXn+5SINdLF
+8Uv31JbsflW3fb97I9eh2A6uQ3/muxz8uWb7frutH/fd379vx7SLWzcrXmUYBaNgFBAEAEZTY4Y;
+
+DEFINE COMMENT 7
+eJwzZ2BgOO5RoKDleUqf0WO6R5GVyCygEEN6SAxPesh5URD7oP9fsQXBEWrrCyQbGptO7njSFLIHJH7d
+bXXMZ62cbSB2tLN0sbfrvgKm4gn5ID7n9BM2Cn2zrJd0NTpObPgU7lfjkx5XtazMtJKhzbSycM7raq2F
+Xxq2LvkweesSkPpHC7mC8hf/mR+/dMM+ED9/sUJk/NLDYYtWTg0N3Dw1VGLLweTZG5Lywhbot69c1N15
+b0t3J8e2F93Z2/5Nyt7mNHvp1vbFSRtPrz6zym5r/uKQPdum3N/PMApGwSggCAAlOl4e;
+
+DEFINE COMMENT 8
+eJwzYWBgiPWPUIv1Vzf66MkR/8Opu/OqVdj6SWaBJ4FSDAf9fytbpv2Z/yM36/D8og8PQGItLvrtSvn6
+7SD2kyYlH/fmhlMgdka9ks/q5ukeXv08rjZz7zmnzZvukTZPIdJm7s1Y52kT8r36DauKJ8RXG89gruRZ
+zFyZv7iv5tLizmkn581dlTzp+07xzpA9IHNYTqraxx75Zlt3oNHRcPta/+otU0P511/PalobXy2/9t8k
+j3Xz515dr7VQY1P7YqkD7YtBevbtEFp+7I7QcoZRMApGAUkAAE/7Vx0;
+
+DEFINE COMMENT 9
+eJxTYGBgOJbO47omxbVvTYrGOiCXYUdpprtruWGVa/nPNSD++ZyFE6bmuva9ro7tAPG9+ifke/XHV1d1
+np13t3NJ89yJX7ySJ033eDA1PeTmHP32m3PEekHqnvctK/s5Y1nZykWeJSD+6nV5uqvX8bhabJicBOLP
+3vCim2EUjIJRMKAAAI4KNFE;
+
+DEFINE COMMENT 10
+eJzzZGBgOO6hqbrOtUBB3qJAocL4rFK9Tqhxv1awQ7/WdA833dro2dZLmrfaFfdnO2otzHbcsG+r3bGj
+FtYNp76arTudYTrjyBnTf5OeWrg3MnpscAIax5CUbq+zJ8lehy1hjl56yDHPWP/aaBef61kfPWM7PnpG
+T3Xx0Vo4IfT06rtxp1fLJ/+Z/yxZZNazZNe+zbG7utJDdnWBzNift+70i/yz87RLPEt2N85TfNsuwQIS
+373msebX1ZqqPIvnKS6bNk8xeZKgdkvfA7MlXZnuBj2BvtumpIdsmL0i8+act4U2c/9N2jDbafa2KX/m
+G/RoLWxs+jMfZMbTtSdsPNbZWv49b2t5+EKj4+dTCpEh+6+UL90KsTvm8VmlmMc3Y0Fso0dn5zGMglEw
+jAEACA+Bvg;
+
+DEFINE LABEL 0
+eJwTYGBg2N24UGR34zzFhXXfbPMqDiZ/KllWNieNfwtQiuFJ03bpJV3WblqTJ+Qrzyqcs2F2xCKQ+Otq
+ubQpPXJpDKNgFIyCIQ0AyMgZ4A;
+
+DEFINE LABEL 1
+eJwTY2BgiPVPD2kPOBzGEhJf3RA+d1VBpOV5oDCDSBBH/ILgT+HhYekhh6PvBNRkrfW/n/U+RTOjorQ5
+eU/t4Wj99h2lsR0rysV68yo2b5QuO7njfM6MI3+jjh1lGAWjYBQMCQAAmNwm4g;
+
+DEFINE LABEL 2
+eJzjZ2BgWN08TzG8UViOu0JY7kbhPEWnbEHta6n8FmcSjnnOilpWZhblNPtwtNBy/tSTO6bm3t9/pUX5
+xMpFyicYRsEoGAVDHgAAPFEYyg;
+
+
+june 9, 2019
+
+Came back to Sorting Floor after a while...
+
+Had this idea of the "zero-terminated temp." It's the way to know when the process is done, if it gets done sooner than the amount of the whatever.
+
+The idea is this - after your left shifts, reset temp to zero. Temp is also initialized to zero. Also, when you are ready to end the left shift loop, if Temp is still 0 - meaning no swap has taken place - then you can proceed to outboxing.
+
+You can pretty much zero terminate everything in this game it seems.
+
+But anyway this would make the ten-sort part much faster. Hopefully I can get the number of steps optimized at last. This would work well because 0 is never going to be a number that comes up in the "string" of inputs.
+
+
+
+
